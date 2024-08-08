@@ -22,8 +22,9 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
+from qgis.core import QgsProject
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -190,6 +191,19 @@ class WQIPlugin:
             self.dlg = WQIPluginDialog()
 
         # show the dialog
+
+        
+        layers = QgsProject.instance().layerTreeRoot().children()
+       
+        #self.dlg.AllCapas.clear()
+        # Populate the comboBox with names of all the loaded layers
+        # self.dlg.AllCapas.addItems([layer.name() for layer in layers])
+        self.dlg.AllCapas.setRowCount(len(layers))
+        row=0
+        for layer in layers:
+            self.dlg.AllCapas.setItem(row,0,QTableWidgetItem(layer.name()))
+            row+=1
+
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
