@@ -43,11 +43,6 @@
      <string>Capa</string>
     </property>
    </column>
-   <column>
-    <property name="text">
-     <string>Tipo</string>
-    </property>
-   </column>
   </widget>
   <widget class="QTableWidget" name="AllCapas">
    <property name="geometry">
@@ -82,11 +77,6 @@
    <column>
     <property name="text">
      <string>Capa</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Tipo</string>
     </property>
    </column>
   </widget>

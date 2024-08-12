@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.core import QgsProject
-from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtGui import QIcon, QAbstractItemView
 from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem
 
 # Initialize Qt resources from file resources.py
@@ -180,6 +180,12 @@ class WQIPlugin:
                 action)
             self.iface.removeToolBarIcon(action)
 
+    def seleccionar_capas(self):
+        """Transfiere las capas de la tabla de AllCapas a la tabla de Seleccionados"""
+        indexes = self.dlg.AllCapas.selectedIndexes
+        for index in indexes:
+            print(index)
+
 
     def run(self):
         """Run method that performs all the real work"""
@@ -189,6 +195,7 @@ class WQIPlugin:
         if self.first_start == True:
             self.first_start = False
             self.dlg = WQIPluginDialog()
+            self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
 
         # show the dialog
 
