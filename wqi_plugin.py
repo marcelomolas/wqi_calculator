@@ -22,9 +22,9 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
-from qgis.core import QgsProject
-from qgis.PyQt.QtGui import QIcon, QAbstractItemView
-from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem
+from qgis.core import QgsProject, QgsMessageLog
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -180,11 +180,35 @@ class WQIPlugin:
                 action)
             self.iface.removeToolBarIcon(action)
 
+    def capa_ya_seleccionada(self, capa_seleccionada):
+        QgsMessageLog.logMessage(str(self.dlg.SelectedCapas.rowCount()), 'WQIPlugin')
+        if(self.dlg.SelectedCapas.rowCount() != 0):
+            for fila in range(0,self.dlg.SelectedCapas.rowCount()):
+                capa = self.dlg.SelectedCapas.item(fila,0).text()
+                if(capa == capa_seleccionada):
+                    return True
+        return False
+
     def seleccionar_capas(self):
         """Transfiere las capas de la tabla de AllCapas a la tabla de Seleccionados"""
-        indexes = self.dlg.AllCapas.selectedIndexes
-        for index in indexes:
-            print(index)
+        capas_seleccionadas = self.dlg.AllCapas.selectedIndexes()
+        numero_capas_seleccionadas_anteriormente = self.dlg.SelectedCapas.rowCount()
+        
+        indice=numero_capas_seleccionadas_anteriormente
+        for capa in capas_seleccionadas:
+            if not self.capa_ya_seleccionada(capa.data()):
+                self.dlg.SelectedCapas.setRowCount(indice+1)
+                self.dlg.SelectedCapas.setItem(indice,0,QTableWidgetItem(capa.data()))
+                indice+=1
+
+    def remover_capas(self):
+        """Remueve las capas de la tabla de SelectedTablas """
+        capas_seleccionadas = self.dlg.SelectedCapas.selectedIndexes()
+
+        for capa in capas_seleccionadas:
+            self.dlg.SelectedCapas.removeRow(capa.row())
+
+
 
 
     def run(self):
@@ -196,6 +220,8 @@ class WQIPlugin:
             self.first_start = False
             self.dlg = WQIPluginDialog()
             self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
+            self.dlg.RemoveCapas.clicked.connect(self.remover_capas)
+            self.dlg.AllCapas.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         # show the dialog
 
