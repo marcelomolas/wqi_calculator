@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>788</width>
-    <height>389</height>
+    <height>411</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,11 +39,11 @@
     <string>&lt;&lt; Remover capas</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="siguienteButton">
    <property name="geometry">
     <rect>
      <x>540</x>
-     <y>360</y>
+     <y>370</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -64,41 +64,15 @@
    <property name="title">
     <string>Capas del proyecto</string>
    </property>
-   <widget class="QTableWidget" name="AllCapas">
+   <widget class="QListWidget" name="AllCapas">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>30</y>
       <width>281</width>
-      <height>271</height>
+      <height>281</height>
      </rect>
     </property>
-    <property name="showGrid">
-     <bool>true</bool>
-    </property>
-    <property name="sortingEnabled">
-     <bool>true</bool>
-    </property>
-    <attribute name="horizontalHeaderVisible">
-     <bool>true</bool>
-    </attribute>
-    <attribute name="horizontalHeaderMinimumSectionSize">
-     <number>43</number>
-    </attribute>
-    <attribute name="verticalHeaderVisible">
-     <bool>true</bool>
-    </attribute>
-    <attribute name="verticalHeaderMinimumSectionSize">
-     <number>19</number>
-    </attribute>
-    <attribute name="verticalHeaderHighlightSections">
-     <bool>true</bool>
-    </attribute>
-    <column>
-     <property name="text">
-      <string>Capa</string>
-     </property>
-    </column>
    </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
@@ -113,27 +87,22 @@
    <property name="title">
     <string>Capas seleccionadas para WQI</string>
    </property>
-   <widget class="QTableWidget" name="SelectedCapas">
+   <widget class="QListWidget" name="SelectedCapas">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>30</y>
       <width>281</width>
-      <height>271</height>
+      <height>281</height>
      </rect>
     </property>
-    <column>
-     <property name="text">
-      <string>Capa</string>
-     </property>
-    </column>
    </widget>
   </widget>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
      <x>620</x>
-     <y>360</y>
+     <y>370</y>
      <width>156</width>
      <height>23</height>
     </rect>
@@ -146,7 +115,7 @@
   <zorder>groupBox</zorder>
   <zorder>AddCapas</zorder>
   <zorder>RemoveCapas</zorder>
-  <zorder>pushButton</zorder>
+  <zorder>siguienteButton</zorder>
   <zorder>buttonBox</zorder>
  </widget>
  <resources/>
