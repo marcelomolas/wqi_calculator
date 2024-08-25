@@ -192,17 +192,25 @@ class WQIPlugin:
     def seleccionar_capas(self):
         """Transfiere las capas de la tabla de AllCapas a la tabla de Seleccionados"""
         capas_seleccionadas = self.dlg.AllCapas.selectedItems()
+        indice = self.dlg.SelectedCapas.count()
 
         for capa in capas_seleccionadas:
             if not self.capa_ya_seleccionada(capa.text()):
                 self.dlg.SelectedCapas.addItem(capa.text())
+
+                self.dlg.DatosAdicionales.setRowCount(indice+1)
+                self.dlg.DatosAdicionales.setItem(indice,0,QTableWidgetItem(capa.text()))
+                indice+=1
 
     def remover_capas(self):
         """Remueve las capas de la tabla de SelectedTablas """
         capas_seleccionadas = self.dlg.SelectedCapas.selectedItems()
 
         for capa in capas_seleccionadas:
-            self.dlg.SelectedCapas.takeItem(self.dlg.SelectedCapas.row(capa))
+            #para la lista de seleccionados
+            num_fila = self.dlg.SelectedCapas.row(capa)
+            self.dlg.SelectedCapas.takeItem(num_fila)
+            self.dlg.DatosAdicionales.removeRow(num_fila)
 
 
 
