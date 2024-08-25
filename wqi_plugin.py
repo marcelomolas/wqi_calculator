@@ -30,6 +30,7 @@ from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView
 from .resources import *
 # Import the code for the dialog
 from .wqi_plugin_dialog import WQIPluginDialog
+from .wqi_plugin_wizard import WQIPluginWizard
 import os.path
 
 
@@ -213,12 +214,11 @@ class WQIPlugin:
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
             self.first_start = False
-            self.dlg = WQIPluginDialog()
+            self.dlg = WQIPluginWizard()
             self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
             self.dlg.RemoveCapas.clicked.connect(self.remover_capas)
             self.dlg.AllCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
-            self.dlg.SelectedCapas.setSelectionMode(QAbstractItemView.ExtendedSelection) 
-            self.dlg.siguienteButton.setEnabled(False)
+            self.dlg.SelectedCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
         # show the dialog
 
         
