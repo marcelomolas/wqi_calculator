@@ -109,7 +109,7 @@
     </column>
     <column>
      <property name="text">
-      <string>Nueva columna</string>
+      <string>Valor Ideal</string>
      </property>
     </column>
     <column>
@@ -117,6 +117,21 @@
       <string>Peso</string>
      </property>
     </column>
+   </widget>
+  </widget>
+  <widget class="QWizardPage" name="wizardPage">
+   <widget class="QToolButton" name="CalcularWQI">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>140</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Calcular WQI</string>
+    </property>
    </widget>
   </widget>
  </widget>

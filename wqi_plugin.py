@@ -22,14 +22,15 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
-from qgis.core import QgsProject, QgsMessageLog
+from qgis._core import QgsMapLayer
+from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView
+from qgis.analysis import QgsRasterCalculator, QgsRasterCalculatorEntry
 
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
-from .wqi_plugin_dialog import WQIPluginDialog
 from .wqi_plugin_wizard import WQIPluginWizard
 import os.path
 
@@ -197,7 +198,6 @@ class WQIPlugin:
         for capa in capas_seleccionadas:
             if not self.capa_ya_seleccionada(capa.text()):
                 self.dlg.SelectedCapas.addItem(capa.text())
-
                 self.dlg.DatosAdicionales.setRowCount(indice+1)
                 self.dlg.DatosAdicionales.setItem(indice,0,QTableWidgetItem(capa.text()))
                 indice+=1
@@ -212,31 +212,60 @@ class WQIPlugin:
             self.dlg.SelectedCapas.takeItem(num_fila)
             self.dlg.DatosAdicionales.removeRow(num_fila)
 
+    def calcular_wqi(self):
+
+        layers_seleccionados = []
+        peso_total = 0
+        for fila in range(0,self.dlg.DatosAdicionales.rowCount()):
+            peso_total += int(self.dlg.DatosAdicionales.item(fila,3).text())
+            for layer in self.layers:
+                if layer.name() == self.dlg.DatosAdicionales.item(fila,0).text():
+                    layers_seleccionados.append(layer.layer())
+
+        entries = []
+        formula = ""
+
+        for fila in range(0,len(layers_seleccionados)):
+            entry = QgsRasterCalculatorEntry()
+            entry.bandNumber = 1
+            entry.raster = layers_seleccionados[fila]
+            entry.ref = layers_seleccionados[fila].name() + "@1"
+            entries.append(entry)
 
 
+            concentracion = entry.ref
+            estandar = self.dlg.DatosAdicionales.item(fila, 1).text()
+            valor_ideal = self.dlg.DatosAdicionales.item(fila,2).text()
+            peso_relativo = int(self.dlg.DatosAdicionales.item(fila, 3).text())/peso_total
+            quality_rating = f"(({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100"
+
+
+            if fila == 0:
+                formula += quality_rating
+            else:
+                formula += "+ " + quality_rating
+        calculadora = QgsRasterCalculator(formulaString=formula,outputFile="C:\\Users\\User\\Documents\\prueba_2.tif",outputFormat="GTiff",rasterEntries=entries, outputExtent=layers_seleccionados[0].extent(), nOutputColumns=layers_seleccionados[0].width(), nOutputRows=layers_seleccionados[0].height())
+        calculadora.processCalculation()
+        QgsMessageLog.logMessage(formula, "tag", 0)
 
     def run(self):
         """Run method that performs all the real work"""
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+
         if self.first_start == True:
             self.first_start = False
             self.dlg = WQIPluginWizard()
+            self.dlg.AllCapas.clear()
             self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
             self.dlg.RemoveCapas.clicked.connect(self.remover_capas)
             self.dlg.AllCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
             self.dlg.SelectedCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        # show the dialog
+            self.dlg.CalcularWQI.clicked.connect(self.calcular_wqi)
 
-        
-        layers = QgsProject.instance().layerTreeRoot().children()
-       
-        #self.dlg.AllCapas.clear()
-        # Populate the comboBox with names of all the loaded layers
-        # self.dlg.AllCapas.addItems([layer.name() for layer in layers])
-        for layer in layers:
-            self.dlg.AllCapas.addItem(layer.name())
+            self.layers = QgsProject.instance().layerTreeRoot().children()
+            self.dlg.AllCapas.addItems([layer.name() for layer in self.layers if layer.layer().type() == QgsMapLayer.RasterLayer])
 
         self.dlg.show()
         # Run the dialog event loop
