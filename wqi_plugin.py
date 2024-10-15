@@ -21,7 +21,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
+from PyQt5.QtWidgets import QTableWidget
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from qgis._core import QgsMapLayer
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
 from qgis.PyQt.QtGui import QIcon
@@ -69,6 +70,7 @@ class WQIPlugin:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+        self.peso_total = 0
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -183,10 +185,10 @@ class WQIPlugin:
             self.iface.removeToolBarIcon(action)
 
     def capa_ya_seleccionada(self, capa_seleccionada):
-        if(self.dlg.SelectedCapas.count() != 0):
+        if self.dlg.SelectedCapas.count() != 0:
             for fila in range(0,self.dlg.SelectedCapas.count()):
                 capa = self.dlg.SelectedCapas.item(fila).text()
-                if(capa == capa_seleccionada):
+                if capa == capa_seleccionada:
                     return True
         return False
 
@@ -200,6 +202,13 @@ class WQIPlugin:
                 self.dlg.SelectedCapas.addItem(capa.text())
                 self.dlg.DatosAdicionales.setRowCount(indice+1)
                 self.dlg.DatosAdicionales.setItem(indice,0,QTableWidgetItem(capa.text()))
+
+                """Hacer que la columna de peso relativo no sea modificable"""
+                item_peso_relativo = QTableWidgetItem()
+                item_peso_relativo.setFlags(item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled) )
+
+                self.dlg.DatosAdicionales.setItem(indice, 4, item_peso_relativo)
+
                 indice+=1
 
     def remover_capas(self):
@@ -211,6 +220,28 @@ class WQIPlugin:
             num_fila = self.dlg.SelectedCapas.row(capa)
             self.dlg.SelectedCapas.takeItem(num_fila)
             self.dlg.DatosAdicionales.removeRow(num_fila)
+
+    def actualizar_peso_relativo(self, item:QTableWidgetItem):
+        tabla:QTableWidget = self.dlg.DatosAdicionales
+        tabla.blockSignals(True)
+
+        if item.column() == 3:
+            self.peso_total = 0
+            for fila in range(0, tabla.rowCount()):
+                peso=tabla.item(fila, 3)
+                if(peso != None):
+                    self.peso_total += int(tabla.item(fila, 3).text())
+
+            for fila in range(0, tabla.rowCount()):
+                peso=tabla.item(fila, 3)
+                if(peso != None):
+                    peso_relativo = int(peso.text()) / self.peso_total
+                    item_peso_relativo = QTableWidgetItem("{:.2f}".format(peso_relativo))
+                    item_peso_relativo.setFlags(item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled))
+                    tabla.setItem(fila, 4, item_peso_relativo)
+
+        tabla.blockSignals(False)
+
 
     def calcular_wqi(self):
 
@@ -237,6 +268,8 @@ class WQIPlugin:
             estandar = self.dlg.DatosAdicionales.item(fila, 1).text()
             valor_ideal = self.dlg.DatosAdicionales.item(fila,2).text()
             peso_relativo = int(self.dlg.DatosAdicionales.item(fila, 3).text())/peso_total
+
+
             quality_rating = f"(({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100"
 
 
@@ -244,8 +277,15 @@ class WQIPlugin:
                 formula += quality_rating
             else:
                 formula += "+ " + quality_rating
-        calculadora = QgsRasterCalculator(formulaString=formula,outputFile="C:\\Users\\User\\Documents\\prueba_2.tif",outputFormat="GTiff",rasterEntries=entries, outputExtent=layers_seleccionados[0].extent(), nOutputColumns=layers_seleccionados[0].width(), nOutputRows=layers_seleccionados[0].height())
+
+        directorio = self.dlg.DirectorioWQI.filePath()
+        raster_file = directorio
+
+        calculadora = QgsRasterCalculator(formulaString=formula,outputFile=raster_file,outputFormat="GTiff",rasterEntries=entries, outputExtent=layers_seleccionados[0].extent(), nOutputColumns=layers_seleccionados[0].width(), nOutputRows=layers_seleccionados[0].height())
         calculadora.processCalculation()
+
+
+        self.iface.addRasterLayer(raster_file, "WQI")
         QgsMessageLog.logMessage(formula, "tag", 0)
 
     def run(self):
@@ -259,10 +299,18 @@ class WQIPlugin:
             self.dlg = WQIPluginWizard()
             self.dlg.AllCapas.clear()
             self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
+            self.dlg.AddCapas.setMinimumWidth(120)
+            self.dlg.RemoveCapas.setMinimumWidth(120)
+            self.dlg.AddCapas.setMinimumHeight(30)
+            self.dlg.RemoveCapas.setMinimumHeight(30)
             self.dlg.RemoveCapas.clicked.connect(self.remover_capas)
             self.dlg.AllCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
             self.dlg.SelectedCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
             self.dlg.CalcularWQI.clicked.connect(self.calcular_wqi)
+
+            self.dlg.DatosAdicionales.itemChanged.connect(self.actualizar_peso_relativo)
+
+            self.peso_total = 0
 
             self.layers = QgsProject.instance().layerTreeRoot().children()
             self.dlg.AllCapas.addItems([layer.name() for layer in self.layers if layer.layer().type() == QgsMapLayer.RasterLayer])
@@ -270,8 +318,10 @@ class WQIPlugin:
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
+        QgsMessageLog.logMessage("hola", "tag", 0)
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
+
             pass

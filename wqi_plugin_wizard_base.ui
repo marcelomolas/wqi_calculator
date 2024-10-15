@@ -6,96 +6,143 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>788</width>
-    <height>471</height>
+    <width>774</width>
+    <height>415</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>WQIPlugin</string>
   </property>
+  <property name="wizardStyle">
+   <enum>QWizard::ModernStyle</enum>
+  </property>
+  <property name="options">
+   <set>QWizard::HelpButtonOnRight</set>
+  </property>
   <widget class="QWizardPage" name="SeleccionarCapasPage">
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>301</width>
-      <height>325</height>
+      <x>10</x>
+      <y>10</y>
+      <width>751</width>
+      <height>351</height>
      </rect>
     </property>
-    <property name="title">
-     <string>Capas del proyecto</string>
-    </property>
-    <widget class="QListWidget" name="AllCapas">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>281</width>
-       <height>281</height>
-      </rect>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>10</number>
      </property>
-    </widget>
-   </widget>
-   <widget class="QToolButton" name="RemoveCapas">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>160</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&lt; Remover capas</string>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="AddCapas">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>120</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Añadir capas &gt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_3">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>0</y>
-      <width>301</width>
-      <height>325</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Capas seleccionadas para WQI</string>
-    </property>
-    <widget class="QListWidget" name="SelectedCapas">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>281</width>
-       <height>281</height>
-      </rect>
-     </property>
-    </widget>
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Capas del proyecto</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QListWidget" name="AllCapas"/>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
+         <widget class="QToolButton" name="AddCapas">
+          <property name="minimumSize">
+           <size>
+            <width>94</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>94</width>
+            <height>19</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Añadir capas &gt;&gt;</string>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextOnly</enum>
+          </property>
+          <property name="autoRaise">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item alignment="Qt::AlignHCenter|Qt::AlignTop">
+         <widget class="QToolButton" name="RemoveCapas">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>19</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>&lt;&lt; Remover capas</string>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextOnly</enum>
+          </property>
+          <property name="autoRaise">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="title">
+        <string>Capas seleccionadas para WQI</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QListWidget" name="SelectedCapas"/>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QWizardPage" name="FillParametros">
    <widget class="QTableWidget" name="DatosAdicionales">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
+      <x>10</x>
+      <y>10</y>
       <width>751</width>
-      <height>321</height>
+      <height>351</height>
      </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustToContents</enum>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
     </property>
     <column>
      <property name="text">
@@ -117,24 +164,122 @@
       <string>Peso</string>
      </property>
     </column>
+    <column>
+     <property name="text">
+      <string>Peso Relativo</string>
+     </property>
+    </column>
    </widget>
   </widget>
-  <widget class="QWizardPage" name="wizardPage">
+  <widget class="QWizardPage" name="ResumenPage">
    <widget class="QToolButton" name="CalcularWQI">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>140</y>
-      <width>111</width>
-      <height>51</height>
+      <x>460</x>
+      <y>170</y>
+      <width>76</width>
+      <height>19</height>
      </rect>
     </property>
     <property name="text">
      <string>Calcular WQI</string>
     </property>
    </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>5</y>
+      <width>751</width>
+      <height>351</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QGroupBox" name="resumen">
+       <property name="title">
+        <string>Resumen</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QGroupBox" name="capaderesultado">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>361</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Capa de resultado</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Capa de salida</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QgsFileWidget" name="DirectorioWQI">
+             <property name="storageMode">
+              <enum>QgsFileWidget::SaveFile</enum>
+             </property>
+             <property name="relativeStorage">
+              <enum>QgsFileWidget::Absolute</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <zorder>frame</zorder>
+   <zorder>CalcularWQI</zorder>
+   <zorder>resumen</zorder>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfilewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
