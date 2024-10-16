@@ -22,11 +22,11 @@
  ***************************************************************************/
 """
 from PyQt5.QtWidgets import QTableWidget
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegExp
 from qgis._core import QgsMapLayer
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView
+from qgis.PyQt.QtGui import QIcon, QRegExpValidator
+from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView, QHeaderView, QStyledItemDelegate, QLineEdit
 from qgis.analysis import QgsRasterCalculator, QgsRasterCalculatorEntry
 
 # Initialize Qt resources from file resources.py
@@ -230,17 +230,19 @@ class WQIPlugin:
             for fila in range(0, tabla.rowCount()):
                 peso=tabla.item(fila, 3)
                 if(peso != None):
-                    self.peso_total += int(tabla.item(fila, 3).text())
+                    self.peso_total += float(tabla.item(fila, 3).text())
 
             for fila in range(0, tabla.rowCount()):
                 peso=tabla.item(fila, 3)
                 if(peso != None):
-                    peso_relativo = int(peso.text()) / self.peso_total
+                    peso_relativo = float(peso.text()) / self.peso_total
                     item_peso_relativo = QTableWidgetItem("{:.2f}".format(peso_relativo))
                     item_peso_relativo.setFlags(item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled))
                     tabla.setItem(fila, 4, item_peso_relativo)
 
         tabla.blockSignals(False)
+
+
 
 
     def calcular_wqi(self):
@@ -267,7 +269,7 @@ class WQIPlugin:
             concentracion = entry.ref
             estandar = self.dlg.DatosAdicionales.item(fila, 1).text()
             valor_ideal = self.dlg.DatosAdicionales.item(fila,2).text()
-            peso_relativo = int(self.dlg.DatosAdicionales.item(fila, 3).text())/peso_total
+            peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 3).text())/peso_total
 
 
             quality_rating = f"(({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100"
@@ -309,6 +311,10 @@ class WQIPlugin:
             self.dlg.CalcularWQI.clicked.connect(self.calcular_wqi)
 
             self.dlg.DatosAdicionales.itemChanged.connect(self.actualizar_peso_relativo)
+            header = self.dlg.DatosAdicionales.horizontalHeader()
+            header.setSectionResizeMode(0, QHeaderView.Stretch)
+            delegate = NumericDelegate(self.dlg.DatosAdicionales)
+            self.dlg.DatosAdicionales.setItemDelegate(delegate)
 
             self.peso_total = 0
 
@@ -325,3 +331,14 @@ class WQIPlugin:
             # substitute with your code.
 
             pass
+
+
+class NumericDelegate(QStyledItemDelegate):
+    def createEditor(self, parent, option, index):
+        editor = super(NumericDelegate, self).createEditor(parent, option, index)
+        if isinstance(editor, QLineEdit):
+            reg_ex = QRegExp("[0-9]+.?[0-9]{,2}")
+
+            validator = QRegExpValidator(reg_ex, editor)
+            editor.setValidator(validator)
+        return editor
