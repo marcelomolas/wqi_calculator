@@ -21,7 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtWidgets import QTableWidget
+from PyQt5.QtWidgets import QTableWidget, QWizardPage
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegExp
 from qgis._core import QgsMapLayer
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
@@ -71,6 +71,7 @@ class WQIPlugin:
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
         self.peso_total = 0
+        self.columnas_validadas = [False, False, False]
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -201,7 +202,9 @@ class WQIPlugin:
             if not self.capa_ya_seleccionada(capa.text()):
                 self.dlg.SelectedCapas.addItem(capa.text())
                 self.dlg.DatosAdicionales.setRowCount(indice+1)
-                self.dlg.DatosAdicionales.setItem(indice,0,QTableWidgetItem(capa.text()))
+                item_nombre_capa = QTableWidgetItem(capa.text())
+                item_nombre_capa.setFlags(item_nombre_capa.flags() ^ QtCore.Qt.ItemIsEditable )
+                self.dlg.DatosAdicionales.setItem(indice,0,item_nombre_capa)
 
                 """Hacer que la columna de peso relativo no sea modificable"""
                 item_peso_relativo = QTableWidgetItem()
@@ -210,6 +213,8 @@ class WQIPlugin:
                 self.dlg.DatosAdicionales.setItem(indice, 4, item_peso_relativo)
 
                 indice+=1
+
+        self.dlg.SeleccionarCapasPage.completeChanged.emit()
 
     def remover_capas(self):
         """Remueve las capas de la tabla de SelectedTablas """
@@ -221,29 +226,41 @@ class WQIPlugin:
             self.dlg.SelectedCapas.takeItem(num_fila)
             self.dlg.DatosAdicionales.removeRow(num_fila)
 
+        self.dlg.SeleccionarCapasPage.completeChanged.emit()
+
     def actualizar_peso_relativo(self, item:QTableWidgetItem):
         tabla:QTableWidget = self.dlg.DatosAdicionales
         tabla.blockSignals(True)
+
+        self.columnas_validadas = [True, True, True]
 
         if item.column() == 3:
             self.peso_total = 0
             for fila in range(0, tabla.rowCount()):
                 peso=tabla.item(fila, 3)
-                if(peso != None):
+                if peso is not None:
                     self.peso_total += float(tabla.item(fila, 3).text())
+                else:
+                    self.columnas_validadas[2] = False
 
             for fila in range(0, tabla.rowCount()):
                 peso=tabla.item(fila, 3)
-                if(peso != None):
+                if peso is not None:
                     peso_relativo = float(peso.text()) / self.peso_total
                     item_peso_relativo = QTableWidgetItem("{:.2f}".format(peso_relativo))
                     item_peso_relativo.setFlags(item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled))
                     tabla.setItem(fila, 4, item_peso_relativo)
+        else:
+            for columna in range(1, 2):
+                for fila in range(0, tabla.rowCount()):
+                    texto = tabla.item(fila, columna)
+                    if texto is not None:
+                        self.columnas_validadas[columna] = False
+                        break
 
+
+        self.dlg.DatosAdicionalesPage.completeChanged.emit()
         tabla.blockSignals(False)
-
-
-
 
     def calcular_wqi(self):
 
@@ -290,6 +307,12 @@ class WQIPlugin:
         self.iface.addRasterLayer(raster_file, "WQI")
         QgsMessageLog.logMessage(formula, "tag", 0)
 
+    def evaluar_seleccionar_capas_page(self):
+        return self.dlg.SelectedCapas.count() > 1
+
+    def evaluar_datos_adicionales_page(self):
+        return all(self.columnas_validadas)
+
     def run(self):
         """Run method that performs all the real work"""
 
@@ -309,6 +332,9 @@ class WQIPlugin:
             self.dlg.AllCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
             self.dlg.SelectedCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
             self.dlg.CalcularWQI.clicked.connect(self.calcular_wqi)
+
+            self.dlg.SeleccionarCapasPage.isComplete = self.evaluar_seleccionar_capas_page
+            self.dlg.DatosAdicionalesPage.isComplete = self.evaluar_datos_adicionales_page
 
             self.dlg.DatosAdicionales.itemChanged.connect(self.actualizar_peso_relativo)
             header = self.dlg.DatosAdicionales.horizontalHeader()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>774</width>
-    <height>415</height>
+    <height>414</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <set>QWizard::HelpButtonOnRight</set>
   </property>
   <widget class="QWizardPage" name="SeleccionarCapasPage">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -145,8 +145,8 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QWizardPage" name="FillParametros">
-   <widget class="QWidget" name="">
+  <widget class="QWizardPage" name="DatosAdicionalesPage">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>11</x>
@@ -275,7 +275,7 @@
      <string>Calcular WQI</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>12</x>
@@ -358,9 +358,8 @@
      </item>
     </layout>
    </widget>
-   <zorder>frame</zorder>
+   <zorder>layoutWidget</zorder>
    <zorder>CalcularWQI</zorder>
-   <zorder>resumen</zorder>
   </widget>
  </widget>
  <customwidgets>
