@@ -240,8 +240,6 @@ class WQIPlugin:
                 peso=tabla.item(fila, 3)
                 if peso is not None:
                     self.peso_total += float(tabla.item(fila, 3).text())
-                else:
-                    self.columnas_validadas[2] = False
 
             for fila in range(0, tabla.rowCount()):
                 peso=tabla.item(fila, 3)
@@ -250,14 +248,16 @@ class WQIPlugin:
                     item_peso_relativo = QTableWidgetItem("{:.2f}".format(peso_relativo))
                     item_peso_relativo.setFlags(item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled))
                     tabla.setItem(fila, 4, item_peso_relativo)
-        else:
-            for columna in range(1, 2):
-                for fila in range(0, tabla.rowCount()):
-                    texto = tabla.item(fila, columna)
-                    if texto is not None:
-                        self.columnas_validadas[columna] = False
-                        break
 
+        for columna in range(1, 4):
+            for fila in range(0, tabla.rowCount()):
+                item_tabla = tabla.item(fila, columna)
+                if item_tabla is None:
+                    self.columnas_validadas[columna-1] = False
+                else:
+                    text = item_tabla.text()
+                    if text == "":
+                        self.columnas_validadas[columna-1] = False
 
         self.dlg.DatosAdicionalesPage.completeChanged.emit()
         tabla.blockSignals(False)
@@ -311,7 +311,8 @@ class WQIPlugin:
         return self.dlg.SelectedCapas.count() > 1
 
     def evaluar_datos_adicionales_page(self):
-        return all(self.columnas_validadas)
+        QgsMessageLog.logMessage(self.columnas_validadas.__str__(), "tag", 0)
+        return self.columnas_validadas[0] & self.columnas_validadas[1] & self.columnas_validadas[2]
 
     def run(self):
         """Run method that performs all the real work"""
