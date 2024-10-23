@@ -17,7 +17,7 @@
    <enum>QWizard::ModernStyle</enum>
   </property>
   <property name="options">
-   <set>QWizard::HelpButtonOnRight</set>
+   <set>QWizard::HelpButtonOnRight|QWizard::NoCancelButtonOnLastPage</set>
   </property>
   <widget class="QWizardPage" name="SeleccionarCapasPage">
    <widget class="QWidget" name="layoutWidget">
@@ -235,7 +235,7 @@
          <number>50</number>
         </property>
         <item>
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="peso_total_label">
           <property name="font">
            <font>
             <weight>75</weight>
@@ -245,7 +245,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Peso total:   x</string>
+           <string/>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -262,29 +262,16 @@
    </widget>
   </widget>
   <widget class="QWizardPage" name="ResumenPage">
-   <widget class="QToolButton" name="CalcularWQI">
-    <property name="geometry">
-     <rect>
-      <x>460</x>
-      <y>170</y>
-      <width>76</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Calcular WQI</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>12</x>
-      <y>5</y>
+      <x>13</x>
+      <y>6</y>
       <width>751</width>
-      <height>351</height>
+      <height>361</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
       <widget class="QGroupBox" name="resumen">
        <property name="title">
@@ -299,6 +286,11 @@
        <property name="checkable">
         <bool>false</bool>
        </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QTextEdit" name="textEdit"/>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
@@ -309,57 +301,51 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QGroupBox" name="capaderesultado">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>361</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string>Capa de resultado</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <widget class="QGroupBox" name="capaderesultado">
+          <property name="title">
+           <string>Capa de resultado</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Capa de salida</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QgsFileWidget" name="DirectorioWQI">
-             <property name="storageMode">
-              <enum>QgsFileWidget::SaveFile</enum>
-             </property>
-             <property name="relativeStorage">
-              <enum>QgsFileWidget::Absolute</enum>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Capa de salida</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QgsFileWidget" name="DirectorioWQI">
+               <property name="storageMode">
+                <enum>QgsFileWidget::SaveFile</enum>
+               </property>
+               <property name="relativeStorage">
+                <enum>QgsFileWidget::Absolute</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
-         </item>
-        </layout>
-       </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
    </widget>
-   <zorder>layoutWidget</zorder>
-   <zorder>CalcularWQI</zorder>
   </widget>
  </widget>
  <customwidgets>

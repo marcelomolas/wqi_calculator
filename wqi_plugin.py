@@ -26,7 +26,7 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegE
 from qgis._core import QgsMapLayer
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
 from qgis.PyQt.QtGui import QIcon, QRegExpValidator
-from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView, QHeaderView, QStyledItemDelegate, QLineEdit
+from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView, QHeaderView, QStyledItemDelegate, QLineEdit, QWizard
 from qgis.analysis import QgsRasterCalculator, QgsRasterCalculatorEntry
 
 # Initialize Qt resources from file resources.py
@@ -241,6 +241,8 @@ class WQIPlugin:
                 if peso is not None:
                     self.peso_total += float(tabla.item(fila, 3).text())
 
+            self.dlg.peso_total_label.setText(f"Peso total: {self.peso_total:.0f}")
+
             for fila in range(0, tabla.rowCount()):
                 peso=tabla.item(fila, 3)
                 if peso is not None:
@@ -311,8 +313,13 @@ class WQIPlugin:
         return self.dlg.SelectedCapas.count() > 1
 
     def evaluar_datos_adicionales_page(self):
-        QgsMessageLog.logMessage(self.columnas_validadas.__str__(), "tag", 0)
         return self.columnas_validadas[0] & self.columnas_validadas[1] & self.columnas_validadas[2]
+
+    def evaluar_resumen_page(self):
+        return self.dlg.DirectorioWQI.filePath() != ""
+
+    def se_selecciono_un_archivo(self):
+        self.dlg.ResumenPage.completeChanged.emit()
 
     def run(self):
         """Run method that performs all the real work"""
@@ -332,10 +339,17 @@ class WQIPlugin:
             self.dlg.RemoveCapas.clicked.connect(self.remover_capas)
             self.dlg.AllCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
             self.dlg.SelectedCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
-            self.dlg.CalcularWQI.clicked.connect(self.calcular_wqi)
+
+
+            self.dlg.DirectorioWQI.fileChanged.connect(self.se_selecciono_un_archivo)
 
             self.dlg.SeleccionarCapasPage.isComplete = self.evaluar_seleccionar_capas_page
             self.dlg.DatosAdicionalesPage.isComplete = self.evaluar_datos_adicionales_page
+            self.dlg.ResumenPage.isComplete = self.evaluar_resumen_page
+
+            self.dlg.setButtonText(QWizard.FinishButton, "Calcular WQI")
+            self.dlg.button(QWizard.FinishButton).clicked.connect(self.calcular_wqi)
+
 
             self.dlg.DatosAdicionales.itemChanged.connect(self.actualizar_peso_relativo)
             header = self.dlg.DatosAdicionales.horizontalHeader()
@@ -351,7 +365,18 @@ class WQIPlugin:
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
-        QgsMessageLog.logMessage("hola", "tag", 0)
+
+        path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
+        translator = QTranslator(app)
+        if translator.load(QLocale.system(), 'qtbase', '_', path):
+            app.installTranslator(translator)
+        translator = QTranslator(app)
+        path = ':/translations'
+        if translator.load(QLocale.system(), 'example', '_', path):
+            app.installTranslator(translator)
+
+
+        #QgsMessageLog.logMessage("hola", "tag", 0)
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
