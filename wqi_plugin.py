@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 from PyQt5.QtWidgets import QTableWidget, QWizardPage
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegExp
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegExp, QLibraryInfo, QLocale
 from qgis._core import QgsMapLayer
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
 from qgis.PyQt.QtGui import QIcon, QRegExpValidator
@@ -53,12 +53,16 @@ class WQIPlugin:
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
+        QgsMessageLog.logMessage('WQIPlugin_{}.qm'.format(locale), "tag", 0)
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
             'WQIPlugin_{}.qm'.format(locale))
 
+        QgsMessageLog.logMessage(os.path.exists(locale_path).__str__(), "tag", 0)
+        QgsMessageLog.logMessage(locale_path.__str__(), "tag", 0)
         if os.path.exists(locale_path):
+            QgsMessageLog.logMessage("Existe!", "tag", 0)
             self.translator = QTranslator()
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
@@ -347,7 +351,7 @@ class WQIPlugin:
             self.dlg.DatosAdicionalesPage.isComplete = self.evaluar_datos_adicionales_page
             self.dlg.ResumenPage.isComplete = self.evaluar_resumen_page
 
-            self.dlg.setButtonText(QWizard.FinishButton, "Calcular WQI")
+            self.dlg.setButtonText(QWizard.FinishButton, self.tr("Calcular WQI"))
             self.dlg.button(QWizard.FinishButton).clicked.connect(self.calcular_wqi)
 
 
@@ -365,16 +369,6 @@ class WQIPlugin:
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
-
-        path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
-        translator = QTranslator(app)
-        if translator.load(QLocale.system(), 'qtbase', '_', path):
-            app.installTranslator(translator)
-        translator = QTranslator(app)
-        path = ':/translations'
-        if translator.load(QLocale.system(), 'example', '_', path):
-            app.installTranslator(translator)
-
 
         #QgsMessageLog.logMessage("hola", "tag", 0)
         # See if OK was pressed

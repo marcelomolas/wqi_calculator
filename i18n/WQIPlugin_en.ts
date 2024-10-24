@@ -6,73 +6,73 @@
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="14"/>
         <source>WQIPlugin</source>
-        <translation type="unfinished"></translation>
+        <translation>WQIPlugin</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="45"/>
         <location filename="wqi_plugin_wizard_base.ui" line="174"/>
         <source>Breve ayuda sobre el propósito de esta página</source>
-        <translation type="unfinished"></translation>
+        <translation>Brief help</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="60"/>
         <source>Capas del proyecto</source>
-        <translation type="unfinished"></translation>
+        <translation>Project layers</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="99"/>
         <source>Añadir capas &gt;&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Add layer(s) &gt;&gt;</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="118"/>
         <source>&lt;&lt; Remover capas</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;&lt; Remove layer(s)</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="134"/>
         <source>Capas seleccionadas para WQI</source>
-        <translation type="unfinished"></translation>
+        <translation>Selected layers for WQI</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="197"/>
         <source>Capa</source>
-        <translation type="unfinished"></translation>
+        <translation>Layer</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="202"/>
         <source>Estándar</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="207"/>
         <source>Valor Ideal</source>
-        <translation type="unfinished"></translation>
+        <translation>Ideal Value</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="212"/>
         <source>Peso</source>
-        <translation type="unfinished"></translation>
+        <translation>Weight</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="217"/>
         <source>Peso Relativo</source>
-        <translation type="unfinished"></translation>
+        <translation>Relative Weight</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="278"/>
         <source>Resumen</source>
-        <translation type="unfinished"></translation>
+        <translation>Summary</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="308"/>
         <source>Capa de resultado</source>
-        <translation type="unfinished"></translation>
+        <translation>Output layer</translation>
     </message>
     <message>
         <location filename="wqi_plugin_wizard_base.ui" line="325"/>
         <source>Capa de salida</source>
-        <translation type="unfinished"></translation>
+        <translation>Output layer</translation>
     </message>
 </context>
 </TS>
