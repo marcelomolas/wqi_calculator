@@ -17,14 +17,14 @@
    <enum>QWizard::ModernStyle</enum>
   </property>
   <property name="options">
-   <set>QWizard::HelpButtonOnRight|QWizard::NoCancelButtonOnLastPage</set>
+   <set>QWizard::HelpButtonOnRight</set>
   </property>
   <widget class="QWizardPage" name="SeleccionarCapasPage">
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>11</y>
       <width>751</width>
       <height>351</height>
      </rect>
@@ -42,7 +42,13 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>Breve ayuda sobre el propósito de esta página</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Seleccione las capas ráster a utilizar en el calculo del Índice de Calidad de Agua (WQI)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -142,6 +148,31 @@
        </item>
       </layout>
      </item>
+     <item>
+      <widget class="QFrame" name="frame_6">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_10">
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Debe seleccionar al menos&lt;span style=&quot; font-weight:600;&quot;&gt; 2 &lt;/span&gt;capas ráster.&lt;span style=&quot; font-weight:600;&quot;&gt; CTRL + Click &lt;/span&gt;para seleccionar más de una capa al mismo tiempo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -171,7 +202,10 @@
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>Breve ayuda sobre el propósito de esta página</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Complete los campos en blanco con los datos a utilizar en el cálculo para avanzar a la siguiente página.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
           </property>
          </widget>
         </item>
@@ -322,7 +356,7 @@
              <item>
               <widget class="QLabel" name="label">
                <property name="text">
-                <string>Capa de salida</string>
+                <string>Archivo de salida (Ráster)</string>
                </property>
               </widget>
              </item>

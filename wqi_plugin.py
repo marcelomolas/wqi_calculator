@@ -245,7 +245,7 @@ class WQIPlugin:
                 if peso is not None:
                     self.peso_total += float(tabla.item(fila, 3).text())
 
-            self.dlg.peso_total_label.setText(f"Peso total: {self.peso_total:.0f}")
+            self.dlg.peso_total_label.setText(self.tr("Peso total:") +" {0:.0f}".format(self.peso_total))
 
             for fila in range(0, tabla.rowCount()):
                 peso=tabla.item(fila, 3)
