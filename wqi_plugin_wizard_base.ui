@@ -20,7 +20,7 @@
    <set>QWizard::HelpButtonOnRight</set>
   </property>
   <widget class="QWizardPage" name="SeleccionarCapasPage">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -322,7 +322,7 @@
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QTextEdit" name="textEdit"/>
+         <widget class="QTextEdit" name="resumenTextEdit"/>
         </item>
        </layout>
       </widget>

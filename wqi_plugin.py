@@ -304,7 +304,7 @@ class WQIPlugin:
                 formula += "+ " + quality_rating
 
         directorio = self.dlg.DirectorioWQI.filePath()
-        raster_file = directorio
+        raster_file = directorio + ".tif"
 
         calculadora = QgsRasterCalculator(formulaString=formula,outputFile=raster_file,outputFormat="GTiff",rasterEntries=entries, outputExtent=layers_seleccionados[0].extent(), nOutputColumns=layers_seleccionados[0].width(), nOutputRows=layers_seleccionados[0].height())
         calculadora.processCalculation()
@@ -324,6 +324,31 @@ class WQIPlugin:
 
     def se_selecciono_un_archivo(self):
         self.dlg.ResumenPage.completeChanged.emit()
+
+    def generar_resumen(self):
+        if self.dlg.currentId() == 2:
+            layers_seleccionados = []
+            peso_total = 0
+            for fila in range(0, self.dlg.DatosAdicionales.rowCount()):
+                peso_total += int(self.dlg.DatosAdicionales.item(fila, 3).text())
+                for layer in self.layers:
+                    if layer.name() == self.dlg.DatosAdicionales.item(fila, 0).text():
+                        layers_seleccionados.append(layer.layer())
+            formula = ""
+
+            for fila in range(0, len(layers_seleccionados)):
+                concentracion = layers_seleccionados[fila].name() + "@1"
+                estandar = self.dlg.DatosAdicionales.item(fila, 1).text()
+                valor_ideal = self.dlg.DatosAdicionales.item(fila, 2).text()
+                peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 3).text()) / peso_total
+
+                quality_rating = f"<span style='font-family: Arial;font-weight: bold; font-size: 16px;'>(<span style='color: red;'>({concentracion}</span> - <span style='color: blue;'>{valor_ideal}</span>) / (<span style='color: green;'>{estandar}</span> - <span style='color: blue;'>{valor_ideal}</span>)) * <span style='color: purple;'>{peso_relativo}</span> * 100</span>"
+
+                if fila == 0:
+                    formula += quality_rating
+                else:
+                    formula += " + " + quality_rating
+            self.dlg.resumenTextEdit.insertHtml(formula)
 
     def run(self):
         """Run method that performs all the real work"""
@@ -353,6 +378,7 @@ class WQIPlugin:
 
             self.dlg.setButtonText(QWizard.FinishButton, self.tr("Calcular WQI"))
             self.dlg.button(QWizard.FinishButton).clicked.connect(self.calcular_wqi)
+            self.dlg.button(QWizard.NextButton).clicked.connect(self.generar_resumen)
 
 
             self.dlg.DatosAdicionales.itemChanged.connect(self.actualizar_peso_relativo)
