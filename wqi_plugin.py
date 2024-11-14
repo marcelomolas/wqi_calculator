@@ -22,13 +22,13 @@
  ***************************************************************************/
 """
 from PyQt5.QtWidgets import QTableWidget, QWizardPage
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegExp, QLibraryInfo, QLocale
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegExp, QLibraryInfo, QLocale, QTimer
 from qgis._core import QgsMapLayer
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
 from qgis.PyQt.QtGui import QIcon, QRegExpValidator
 from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView, QHeaderView, QStyledItemDelegate, QLineEdit, QWizard
 from qgis.analysis import QgsRasterCalculator, QgsRasterCalculatorEntry
-
+import processing
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
@@ -245,7 +245,7 @@ class WQIPlugin:
                 if peso is not None:
                     self.peso_total += float(tabla.item(fila, 3).text())
 
-            self.dlg.peso_total_label.setText(self.tr("Peso total:") +" {0:.0f}".format(self.peso_total))
+            self.dlg.peso_total_label.setText("{0:.0f}".format(self.peso_total))
 
             for fila in range(0, tabla.rowCount()):
                 peso=tabla.item(fila, 3)
@@ -295,7 +295,7 @@ class WQIPlugin:
             peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 3).text())/peso_total
 
 
-            quality_rating = f"(({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100"
+            quality_rating = f"((({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100)"
 
 
             if fila == 0:
@@ -317,16 +317,17 @@ class WQIPlugin:
         return self.dlg.SelectedCapas.count() > 1
 
     def evaluar_datos_adicionales_page(self):
-        return self.columnas_validadas[0] & self.columnas_validadas[1] & self.columnas_validadas[2]
+        return self.columnas_validadas[0] & self.columnas_validadas[1] & self.columnas_validadas[2] & (self.dlg.DirectorioWQI.filePath() != "")
 
     def evaluar_resumen_page(self):
         return self.dlg.DirectorioWQI.filePath() != ""
 
     def se_selecciono_un_archivo(self):
-        self.dlg.ResumenPage.completeChanged.emit()
+        self.dlg.DatosAdicionalesPage.completeChanged.emit()
 
     def generar_resumen(self):
         if self.dlg.currentId() == 2:
+            self.dlg.resumenTextEdit.clear()
             layers_seleccionados = []
             peso_total = 0
             for fila in range(0, self.dlg.DatosAdicionales.rowCount()):
@@ -342,13 +343,48 @@ class WQIPlugin:
                 valor_ideal = self.dlg.DatosAdicionales.item(fila, 2).text()
                 peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 3).text()) / peso_total
 
-                quality_rating = f"<span style='font-family: Arial;font-weight: bold; font-size: 16px;'>(<span style='color: red;'>({concentracion}</span> - <span style='color: blue;'>{valor_ideal}</span>) / (<span style='color: green;'>{estandar}</span> - <span style='color: blue;'>{valor_ideal}</span>)) * <span style='color: purple;'>{peso_relativo}</span> * 100</span>"
+                quality_rating = f"<span style='font-family: Latin Modern;font-weight: bold; font-size: 16px;'>(<span style='color: #cb4335;'>({concentracion}</span> - <span style='color: #1e8449 ;'>{valor_ideal}</span>) / (<span style='color: #2e86c1;'>{estandar}</span> - <span style='color: #1e8449 ;'>{valor_ideal}</span>)) * <span style='color: #d68910;'>{peso_relativo:.2f}</span> * 100</span>"
 
                 if fila == 0:
                     formula += quality_rating
                 else:
                     formula += " + " + quality_rating
             self.dlg.resumenTextEdit.insertHtml(formula)
+
+
+    def obtener_lista_de_capas(self):
+        self.layers = QgsProject.instance().layerTreeRoot().findLayers()
+        self.dlg.AllCapas.clear()
+        QgsMessageLog.logMessage("nuevos rasters", "tag", 0)
+        self.dlg.AllCapas.addItems(
+            [layer.name() for layer in self.layers])
+
+    def delay_actualizar_rasters(self, *args):
+        # Usa un pequeño retraso para permitir que la capa se agregue completamente
+        QTimer.singleShot(100, self.obtener_lista_de_capas)  # 100 ms debería ser suficiente
+
+    def abrir_plugin_interpolacion(self):
+        processing.execAlgorithmDialog('gdal:gridinversedistance')
+
+    def se_selecciono_un_elemento_de_la_lista(self):
+        solo_capas_raster_seleccionadas = True
+        for capa in (self.dlg.AllCapas.selectedItems()):
+            for layer in self.layers:
+                if layer.name() == capa.text() and layer.layer().type() == QgsMapLayer.VectorLayer:
+                        solo_capas_raster_seleccionadas = False
+
+        if solo_capas_raster_seleccionadas:
+            QgsMessageLog.logMessage("Solo capas raster", "tag", 0)
+            self.dlg.AddCapas.setEnabled(True)
+            self.dlg.RemoveCapas.setEnabled(True)
+            self.dlg.InterpolarButton.setEnabled(False)
+        else:
+            self.dlg.AddCapas.setEnabled(False)
+            self.dlg.RemoveCapas.setEnabled(False)
+            self.dlg.InterpolarButton.setEnabled(True)
+
+
+
 
     def run(self):
         """Run method that performs all the real work"""
@@ -360,12 +396,19 @@ class WQIPlugin:
             self.first_start = False
             self.dlg = WQIPluginWizard()
             self.dlg.AllCapas.clear()
-            self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
+
             self.dlg.AddCapas.setMinimumWidth(120)
             self.dlg.RemoveCapas.setMinimumWidth(120)
             self.dlg.AddCapas.setMinimumHeight(30)
             self.dlg.RemoveCapas.setMinimumHeight(30)
+            self.dlg.InterpolarButton.setMinimumWidth(120)
+            self.dlg.InterpolarButton.setMinimumHeight(30)
+            self.dlg.InterpolarButton.setEnabled(False)
+
+            self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
             self.dlg.RemoveCapas.clicked.connect(self.remover_capas)
+            self.dlg.InterpolarButton.clicked.connect(self.abrir_plugin_interpolacion)
+
             self.dlg.AllCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
             self.dlg.SelectedCapas.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
@@ -374,12 +417,13 @@ class WQIPlugin:
 
             self.dlg.SeleccionarCapasPage.isComplete = self.evaluar_seleccionar_capas_page
             self.dlg.DatosAdicionalesPage.isComplete = self.evaluar_datos_adicionales_page
-            self.dlg.ResumenPage.isComplete = self.evaluar_resumen_page
+            #self.dlg.ResumenPage.isComplete = self.evaluar_resumen_page
 
             self.dlg.setButtonText(QWizard.FinishButton, self.tr("Calcular WQI"))
             self.dlg.button(QWizard.FinishButton).clicked.connect(self.calcular_wqi)
-            self.dlg.button(QWizard.NextButton).clicked.connect(self.generar_resumen)
+            #self.dlg.button(QWizard.NextButton).clicked.connect(self.generar_resumen)
 
+            self.dlg.AllCapas.itemSelectionChanged.connect(self.se_selecciono_un_elemento_de_la_lista)
 
             self.dlg.DatosAdicionales.itemChanged.connect(self.actualizar_peso_relativo)
             header = self.dlg.DatosAdicionales.horizontalHeader()
@@ -388,9 +432,9 @@ class WQIPlugin:
             self.dlg.DatosAdicionales.setItemDelegate(delegate)
 
             self.peso_total = 0
-
-            self.layers = QgsProject.instance().layerTreeRoot().children()
-            self.dlg.AllCapas.addItems([layer.name() for layer in self.layers if layer.layer().type() == QgsMapLayer.RasterLayer])
+            self.obtener_lista_de_capas()
+            QgsProject.instance().layerWasAdded.connect(self.delay_actualizar_rasters)
+            QgsProject.instance().layerRemoved.connect(self.delay_actualizar_rasters)
 
         self.dlg.show()
         # Run the dialog event loop
