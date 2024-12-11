@@ -2,11 +2,14 @@
 <ui version="4.0">
  <class>WQIPlugin</class>
  <widget class="QWizard" name="WQIPlugin">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>774</width>
+    <width>1036</width>
     <height>450</height>
    </rect>
   </property>
@@ -200,6 +203,22 @@
      </item>
     </layout>
    </widget>
+   <widget class="QColumnView" name="columnView">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>10</y>
+      <width>256</width>
+      <height>381</height>
+     </rect>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="resizeGripsVisible">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QWizardPage" name="DatosAdicionalesPage">
    <property name="maximumSize">
@@ -307,6 +326,11 @@
        <column>
         <property name="text">
          <string>Capa</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Parámetro</string>
         </property>
        </column>
        <column>
