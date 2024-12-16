@@ -262,17 +262,17 @@
            <x>0</x>
            <y>0</y>
            <width>231</width>
-           <height>384</height>
+           <height>399</height>
           </rect>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <widget class="QLabel" name="InformationTextLabel1">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -290,7 +290,7 @@
              </size>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;WQI Plugin&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Genera de forma automática el Índice de Calidad de Agua (WQI, por sus siglas en inglés) utilizando capas ráster como datos de entrada.&lt;/p&gt;&lt;p&gt;El WQI se calcula mediante una fórmula que combina varios parámetros físico-químicos del agua:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;WQI=∑&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:super;&quot;&gt;n&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i=1&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt; W&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;x&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt; q&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;/p&gt;&lt;p&gt;donde W&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el peso relativo del i-ésimo parámetro y q&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es su puntuación de calidad calculado de la siguiente manera:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;q&lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;= (|C&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;- I&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;| / |S&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;- I&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;|) x 100&lt;/span&gt;&lt;/p&gt;&lt;p&gt;donde C&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es la concentración correspondiente al i-ésimo parámetro, I&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el valor ideal en agua pura y S&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el estándar del i-ésimo parámetro en agua bebible.&lt;/p&gt;&lt;p&gt;Las capas ráster utilizadas como entrada representan a esos parámetros.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;WQI Plugin&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Genera de forma automática el Índice de Calidad de Agua (WQI, por sus siglas en inglés) utilizando capas ráster como datos de entrada.&lt;/p&gt;&lt;p&gt;El WQI se calcula mediante una fórmula que combina varios parámetros físico-químicos del agua:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;WQI=∑&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:super;&quot;&gt;n&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i=1&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt; W&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;x&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt; q&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;/p&gt;&lt;p&gt;donde W&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el peso relativo del i-ésimo parámetro y q&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es su puntuación de calidad calculado de la siguiente manera:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;q&lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;= (|C&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;- I&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;| / |S&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;- I&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;|) x 100&lt;/span&gt;&lt;/p&gt;&lt;p&gt;donde C&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es la concentración correspondiente al i-ésimo parámetro, I&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el valor ideal en agua pura y S&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el estándar del i-ésimo parámetro en agua bebible.&lt;/p&gt;&lt;p&gt;Las capas ráster utilizadas como entrada representan a esos parámetros. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="textFormat">
              <enum>Qt::RichText</enum>
@@ -445,7 +445,7 @@
         </property>
         <column>
          <property name="text">
-          <string>Capa</string>
+          <string>Capa (C)</string>
          </property>
         </column>
         <column>
@@ -455,12 +455,12 @@
         </column>
         <column>
          <property name="text">
-          <string>Estándar</string>
+          <string>Estándar (S)</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Valor Ideal</string>
+          <string>Valor Ideal (I)</string>
          </property>
         </column>
         <column>
@@ -470,7 +470,7 @@
         </column>
         <column>
          <property name="text">
-          <string>Peso Relativo</string>
+          <string>Peso Relativo (W)</string>
          </property>
         </column>
        </widget>
@@ -571,6 +571,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_10">
           <item>
            <widget class="QLabel" name="InformationTextLabel2">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="maximumSize">
              <size>
               <width>225</width>
@@ -609,7 +612,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>53</height>
+          <height>62</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -644,6 +647,16 @@
    <header>qgsfilewidget.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>AddCapas</tabstop>
+  <tabstop>RemoveCapas</tabstop>
+  <tabstop>InterpolarButton</tabstop>
+  <tabstop>SelectedCapas</tabstop>
+  <tabstop>AllCapas</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>DatosAdicionales</tabstop>
+  <tabstop>scrollArea_4</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
