@@ -389,7 +389,7 @@ class WQIPlugin:
         QTimer.singleShot(100, self.obtener_lista_de_capas)  # 100 ms debería ser suficiente
 
     def abrir_plugin_interpolacion(self):
-        processing.execAlgorithmDialog('gdal:gridinversedistance')
+        processing.execAlgorithmDialog('gdal:gridinversedistance',)
 
     def se_selecciono_un_elemento_de_la_lista(self):
         solo_capas_raster_seleccionadas = True
