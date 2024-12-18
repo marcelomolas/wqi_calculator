@@ -77,6 +77,9 @@ class WQIPlugin:
         self.peso_total = 0
         self.columnas_validadas = [False, False, False]
 
+        self.flag_mas_de_dos_rasters_seleccionados = True #Ponemos en true para que durante el primer uso no tire un error.
+        self.flag_solo_rasters_seleccionados = False
+
         self.parametros_estandar = {
             1: {"Estandar": 7.5, "Ideal": 5, "Peso": 4},  # "pH"
             2: {"Estandar": 1000, "Ideal": 0, "Peso": 5},  # "Sólidos Totales Disueltos"
@@ -243,6 +246,9 @@ class WQIPlugin:
 
                 indice+=1
 
+        self.flag_mas_de_dos_rasters_seleccionados = self.dlg.SelectedCapas.count() > 1
+        self.verificar_mensaje_de_error()
+
         self.dlg.SeleccionarCapasPage.completeChanged.emit()
 
     def remover_capas(self):
@@ -254,6 +260,9 @@ class WQIPlugin:
             num_fila = self.dlg.SelectedCapas.row(capa)
             self.dlg.SelectedCapas.takeItem(num_fila)
             self.dlg.DatosAdicionales.removeRow(num_fila)
+
+        self.flag_mas_de_dos_rasters_seleccionados = self.dlg.SelectedCapas.count() > 1
+        self.verificar_mensaje_de_error()
 
         self.dlg.SeleccionarCapasPage.completeChanged.emit()
 
@@ -392,6 +401,8 @@ class WQIPlugin:
         processing.execAlgorithmDialog('gdal:gridinversedistance',)
 
     def se_selecciono_un_elemento_de_la_lista(self):
+
+
         solo_capas_raster_seleccionadas = True
         for capa in (self.dlg.AllCapas.selectedItems()):
             for layer in self.layers:
@@ -399,7 +410,6 @@ class WQIPlugin:
                         solo_capas_raster_seleccionadas = False
 
         if solo_capas_raster_seleccionadas:
-            QgsMessageLog.logMessage("Solo capas raster", "tag", 0)
             self.dlg.AddCapas.setEnabled(True)
             self.dlg.RemoveCapas.setEnabled(True)
             self.dlg.InterpolarButton.setEnabled(False)
@@ -407,6 +417,9 @@ class WQIPlugin:
             self.dlg.AddCapas.setEnabled(False)
             self.dlg.RemoveCapas.setEnabled(False)
             self.dlg.InterpolarButton.setEnabled(True)
+
+        self.flag_solo_rasters_seleccionados = solo_capas_raster_seleccionadas
+        self.verificar_mensaje_de_error()
 
     def agregar_datos_preestablecidos_a_tabla(self, index, row):
 
@@ -420,7 +433,13 @@ class WQIPlugin:
                 else:
                         self.dlg.DatosAdicionales.item(row, columna).setText(str(self.parametros_estandar[index][self.indice_a_clave[columna]]))
 
-
+    def verificar_mensaje_de_error(self):
+        if self.flag_mas_de_dos_rasters_seleccionados & self.flag_solo_rasters_seleccionados:
+            self.dlg.errorTextLabel1.setText("")
+        elif not self.flag_solo_rasters_seleccionados:
+            self.dlg.errorTextLabel1.setText(f"Solo capas ráster pueden ser seleccionadas.")
+        elif not self.flag_mas_de_dos_rasters_seleccionados:
+            self.dlg.errorTextLabel1.setText(f"Seleccionar como mínimo 2 capas ráster.")
 
 
 
@@ -442,6 +461,9 @@ class WQIPlugin:
             self.dlg.InterpolarButton.setMinimumWidth(120)
             self.dlg.InterpolarButton.setMinimumHeight(30)
             self.dlg.InterpolarButton.setEnabled(False)
+
+            self.dlg.errorTextLabel1.setStyleSheet("color: red;font-weight: bold")
+            self.dlg.errorTextLabel2.setStyleSheet("color: red;font-weight: bold")
 
             self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
             self.dlg.RemoveCapas.clicked.connect(self.remover_capas)
