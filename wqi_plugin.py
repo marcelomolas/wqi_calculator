@@ -26,7 +26,7 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegE
 from qgis._core import QgsMapLayer
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
 from qgis.PyQt.QtGui import QIcon, QRegExpValidator
-from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView, QHeaderView, QStyledItemDelegate, QLineEdit, QWizard
+from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView, QHeaderView, QStyledItemDelegate, QLineEdit, QWizard, QComboBox
 from qgis.analysis import QgsRasterCalculator, QgsRasterCalculatorEntry
 import processing
 # Initialize Qt resources from file resources.py
@@ -76,6 +76,28 @@ class WQIPlugin:
         self.first_start = None
         self.peso_total = 0
         self.columnas_validadas = [False, False, False]
+
+        self.flag_mas_de_dos_rasters_seleccionados = True #Ponemos en true para que durante el primer uso no tire un error.
+        self.flag_solo_rasters_seleccionados = False
+
+        self.parametros_estandar = {
+            1: {"Estandar": 7.5, "Ideal": 5, "Peso": 4},  # "pH"
+            2: {"Estandar": 1000, "Ideal": 0, "Peso": 5},  # "Sólidos Totales Disueltos"
+            3: {"Estandar": 250, "Ideal": 0, "Peso": 5},  # "Cloro"
+            4: {"Estandar": 250, "Ideal": 0, "Peso": 5},  # "Sulfato"
+            5: {"Estandar": 200, "Ideal": 0, "Peso": 4},  # "Sodio"
+            6: {"Estandar": 12, "Ideal": 0, "Peso": 2},  # "Potasio"
+            7: {"Estandar": 100, "Ideal": 0, "Peso": 3},  # "Calcio"
+            8: {"Estandar": 50, "Ideal": 0, "Peso": 3},  # "Magnesio"
+            9: {"Estandar": 400, "Ideal": 0, "Peso": 2},  # "Dureza"
+            10: {"Estandar": 45, "Ideal": 0, "Peso": 5},  # "Nitratos"
+        }
+
+        self.indice_a_clave = {
+            2: "Estandar",
+            3: "Ideal",
+            4: "Peso",
+        }
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -208,15 +230,24 @@ class WQIPlugin:
                 self.dlg.DatosAdicionales.setRowCount(indice+1)
                 item_nombre_capa = QTableWidgetItem(capa.text())
                 item_nombre_capa.setFlags(item_nombre_capa.flags() ^ QtCore.Qt.ItemIsEditable )
+                #agregar la capa seleccionada a la tabla
                 self.dlg.DatosAdicionales.setItem(indice,0,item_nombre_capa)
+                #agregar un combobox a la tabla
+                combo_box_parametros = QComboBox()
+                combo_box_parametros.addItems([self.tr("Personalizado"),self.tr("pH"), self.tr("Sólidos Totales Disueltos"), self.tr("Cloro"), self.tr("Sulfato"), self.tr("Sodio"), self.tr("Potasio"), self.tr("Calcio"), self.tr("Magnesio"), self.tr("Dureza"), self.tr("Nitratos")])
+                combo_box_parametros.currentIndexChanged.connect(lambda state, row=indice : self.agregar_datos_preestablecidos_a_tabla(state, row))
+                self.dlg.DatosAdicionales.setCellWidget(indice, 1, combo_box_parametros)
 
                 """Hacer que la columna de peso relativo no sea modificable"""
                 item_peso_relativo = QTableWidgetItem()
                 item_peso_relativo.setFlags(item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled) )
 
-                self.dlg.DatosAdicionales.setItem(indice, 4, item_peso_relativo)
+                self.dlg.DatosAdicionales.setItem(indice, 5, item_peso_relativo)
 
                 indice+=1
+
+        self.flag_mas_de_dos_rasters_seleccionados = self.dlg.SelectedCapas.count() > 1
+        self.verificar_mensaje_de_error()
 
         self.dlg.SeleccionarCapasPage.completeChanged.emit()
 
@@ -230,6 +261,9 @@ class WQIPlugin:
             self.dlg.SelectedCapas.takeItem(num_fila)
             self.dlg.DatosAdicionales.removeRow(num_fila)
 
+        self.flag_mas_de_dos_rasters_seleccionados = self.dlg.SelectedCapas.count() > 1
+        self.verificar_mensaje_de_error()
+
         self.dlg.SeleccionarCapasPage.completeChanged.emit()
 
     def actualizar_peso_relativo(self, item:QTableWidgetItem):
@@ -238,32 +272,32 @@ class WQIPlugin:
 
         self.columnas_validadas = [True, True, True]
 
-        if item.column() == 3:
+        if item.column() == 4:
             self.peso_total = 0
             for fila in range(0, tabla.rowCount()):
-                peso=tabla.item(fila, 3)
+                peso=tabla.item(fila, 4)
                 if peso is not None:
-                    self.peso_total += float(tabla.item(fila, 3).text())
+                    self.peso_total += float(tabla.item(fila, 4).text())
 
             self.dlg.peso_total_label.setText("{0:.0f}".format(self.peso_total))
 
             for fila in range(0, tabla.rowCount()):
-                peso=tabla.item(fila, 3)
+                peso=tabla.item(fila, 4)
                 if peso is not None:
                     peso_relativo = float(peso.text()) / self.peso_total
                     item_peso_relativo = QTableWidgetItem("{:.2f}".format(peso_relativo))
                     item_peso_relativo.setFlags(item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled))
-                    tabla.setItem(fila, 4, item_peso_relativo)
+                    tabla.setItem(fila, 5, item_peso_relativo)
 
-        for columna in range(1, 4):
+        for columna in range(2, 5):
             for fila in range(0, tabla.rowCount()):
                 item_tabla = tabla.item(fila, columna)
                 if item_tabla is None:
-                    self.columnas_validadas[columna-1] = False
+                    self.columnas_validadas[columna-2] = False
                 else:
                     text = item_tabla.text()
                     if text == "":
-                        self.columnas_validadas[columna-1] = False
+                        self.columnas_validadas[columna-2] = False
 
         self.dlg.DatosAdicionalesPage.completeChanged.emit()
         tabla.blockSignals(False)
@@ -273,7 +307,7 @@ class WQIPlugin:
         layers_seleccionados = []
         peso_total = 0
         for fila in range(0,self.dlg.DatosAdicionales.rowCount()):
-            peso_total += int(self.dlg.DatosAdicionales.item(fila,3).text())
+            peso_total += int(self.dlg.DatosAdicionales.item(fila,4).text())
             for layer in self.layers:
                 if layer.name() == self.dlg.DatosAdicionales.item(fila,0).text():
                     layers_seleccionados.append(layer.layer())
@@ -290,9 +324,9 @@ class WQIPlugin:
 
 
             concentracion = entry.ref
-            estandar = self.dlg.DatosAdicionales.item(fila, 1).text()
-            valor_ideal = self.dlg.DatosAdicionales.item(fila,2).text()
-            peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 3).text())/peso_total
+            estandar = self.dlg.DatosAdicionales.item(fila, 2).text()
+            valor_ideal = self.dlg.DatosAdicionales.item(fila,3).text()
+            peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 4).text())/peso_total
 
 
             quality_rating = f"((({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100)"
@@ -331,7 +365,7 @@ class WQIPlugin:
             layers_seleccionados = []
             peso_total = 0
             for fila in range(0, self.dlg.DatosAdicionales.rowCount()):
-                peso_total += int(self.dlg.DatosAdicionales.item(fila, 3).text())
+                peso_total += int(self.dlg.DatosAdicionales.item(fila, 4).text())
                 for layer in self.layers:
                     if layer.name() == self.dlg.DatosAdicionales.item(fila, 0).text():
                         layers_seleccionados.append(layer.layer())
@@ -339,9 +373,9 @@ class WQIPlugin:
 
             for fila in range(0, len(layers_seleccionados)):
                 concentracion = layers_seleccionados[fila].name() + "@1"
-                estandar = self.dlg.DatosAdicionales.item(fila, 1).text()
-                valor_ideal = self.dlg.DatosAdicionales.item(fila, 2).text()
-                peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 3).text()) / peso_total
+                estandar = self.dlg.DatosAdicionales.item(fila, 2).text()
+                valor_ideal = self.dlg.DatosAdicionales.item(fila, 3).text()
+                peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 4).text()) / peso_total
 
                 quality_rating = f"<span style='font-family: Latin Modern;font-weight: bold; font-size: 16px;'>(<span style='color: #cb4335;'>({concentracion}</span> - <span style='color: #1e8449 ;'>{valor_ideal}</span>) / (<span style='color: #2e86c1;'>{estandar}</span> - <span style='color: #1e8449 ;'>{valor_ideal}</span>)) * <span style='color: #d68910;'>{peso_relativo:.2f}</span> * 100</span>"
 
@@ -355,7 +389,6 @@ class WQIPlugin:
     def obtener_lista_de_capas(self):
         self.layers = QgsProject.instance().layerTreeRoot().findLayers()
         self.dlg.AllCapas.clear()
-        QgsMessageLog.logMessage("nuevos rasters", "tag", 0)
         self.dlg.AllCapas.addItems(
             [layer.name() for layer in self.layers])
 
@@ -364,9 +397,11 @@ class WQIPlugin:
         QTimer.singleShot(100, self.obtener_lista_de_capas)  # 100 ms debería ser suficiente
 
     def abrir_plugin_interpolacion(self):
-        processing.execAlgorithmDialog('gdal:gridinversedistance')
+        processing.execAlgorithmDialog('gdal:gridinversedistance',)
 
     def se_selecciono_un_elemento_de_la_lista(self):
+
+
         solo_capas_raster_seleccionadas = True
         for capa in (self.dlg.AllCapas.selectedItems()):
             for layer in self.layers:
@@ -374,7 +409,6 @@ class WQIPlugin:
                         solo_capas_raster_seleccionadas = False
 
         if solo_capas_raster_seleccionadas:
-            QgsMessageLog.logMessage("Solo capas raster", "tag", 0)
             self.dlg.AddCapas.setEnabled(True)
             self.dlg.RemoveCapas.setEnabled(True)
             self.dlg.InterpolarButton.setEnabled(False)
@@ -383,6 +417,28 @@ class WQIPlugin:
             self.dlg.RemoveCapas.setEnabled(False)
             self.dlg.InterpolarButton.setEnabled(True)
 
+        self.flag_solo_rasters_seleccionados = solo_capas_raster_seleccionadas
+        self.verificar_mensaje_de_error()
+
+    def agregar_datos_preestablecidos_a_tabla(self, index, row):
+
+        columnas_de_tabla_datos_adicionales = [2,3,4]
+        if index != 0:
+            for columna in columnas_de_tabla_datos_adicionales:
+                item = self.dlg.DatosAdicionales.item(row, columna)
+                if item is None:
+                        item = QTableWidgetItem(str(self.parametros_estandar[index][self.indice_a_clave[columna]]))
+                        self.dlg.DatosAdicionales.setItem(row, columna, item)
+                else:
+                        self.dlg.DatosAdicionales.item(row, columna).setText(str(self.parametros_estandar[index][self.indice_a_clave[columna]]))
+
+    def verificar_mensaje_de_error(self):
+        if self.flag_mas_de_dos_rasters_seleccionados & self.flag_solo_rasters_seleccionados:
+            self.dlg.errorTextLabel1.setText("")
+        elif not self.flag_solo_rasters_seleccionados:
+            self.dlg.errorTextLabel1.setText(self.tr(f"Solo capas ráster pueden ser seleccionadas."))
+        elif not self.flag_mas_de_dos_rasters_seleccionados:
+            self.dlg.errorTextLabel1.setText(self.tr(f"Seleccionar como mínimo 2 capas ráster."))
 
 
 
@@ -404,6 +460,9 @@ class WQIPlugin:
             self.dlg.InterpolarButton.setMinimumWidth(120)
             self.dlg.InterpolarButton.setMinimumHeight(30)
             self.dlg.InterpolarButton.setEnabled(False)
+
+            self.dlg.errorTextLabel1.setStyleSheet("color: red;font-weight: bold")
+            self.dlg.errorTextLabel2.setStyleSheet("color: red;font-weight: bold")
 
             self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
             self.dlg.RemoveCapas.clicked.connect(self.remover_capas)
@@ -453,7 +512,7 @@ class NumericDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
         editor = super(NumericDelegate, self).createEditor(parent, option, index)
         if isinstance(editor, QLineEdit):
-            reg_ex = QRegExp("[0-9]+.?[0-9]{,2}")
+            reg_ex = QRegExp("[0-9]+\.?[0-9]{,2}")
 
             validator = QRegExpValidator(reg_ex, editor)
             editor.setValidator(validator)
