@@ -182,7 +182,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
-           <string>Capas Ráster seleccionadas para WQI</string>
+           <string>Capas ráster seleccionadas para WQI</string>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>

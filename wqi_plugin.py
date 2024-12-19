@@ -234,7 +234,7 @@ class WQIPlugin:
                 self.dlg.DatosAdicionales.setItem(indice,0,item_nombre_capa)
                 #agregar un combobox a la tabla
                 combo_box_parametros = QComboBox()
-                combo_box_parametros.addItems(["Personalizado","pH", "Sólidos Totales Disueltos", "Cloro", "Sulfato", "Sodio", "Potasio", "Calcio", "Magnesio", "Dureza", "Nitratos"])
+                combo_box_parametros.addItems([self.tr("Personalizado"),self.tr("pH"), self.tr("Sólidos Totales Disueltos"), self.tr("Cloro"), self.tr("Sulfato"), self.tr("Sodio"), self.tr("Potasio"), self.tr("Calcio"), self.tr("Magnesio"), self.tr("Dureza"), self.tr("Nitratos")])
                 combo_box_parametros.currentIndexChanged.connect(lambda state, row=indice : self.agregar_datos_preestablecidos_a_tabla(state, row))
                 self.dlg.DatosAdicionales.setCellWidget(indice, 1, combo_box_parametros)
 
@@ -389,7 +389,6 @@ class WQIPlugin:
     def obtener_lista_de_capas(self):
         self.layers = QgsProject.instance().layerTreeRoot().findLayers()
         self.dlg.AllCapas.clear()
-        QgsMessageLog.logMessage("nuevos rasters", "tag", 0)
         self.dlg.AllCapas.addItems(
             [layer.name() for layer in self.layers])
 
@@ -437,9 +436,9 @@ class WQIPlugin:
         if self.flag_mas_de_dos_rasters_seleccionados & self.flag_solo_rasters_seleccionados:
             self.dlg.errorTextLabel1.setText("")
         elif not self.flag_solo_rasters_seleccionados:
-            self.dlg.errorTextLabel1.setText(f"Solo capas ráster pueden ser seleccionadas.")
+            self.dlg.errorTextLabel1.setText(self.tr(f"Solo capas ráster pueden ser seleccionadas."))
         elif not self.flag_mas_de_dos_rasters_seleccionados:
-            self.dlg.errorTextLabel1.setText(f"Seleccionar como mínimo 2 capas ráster.")
+            self.dlg.errorTextLabel1.setText(self.tr(f"Seleccionar como mínimo 2 capas ráster."))
 
 
 
