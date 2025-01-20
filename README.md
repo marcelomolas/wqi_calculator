@@ -9,16 +9,6 @@ WQIPlugin is a **QGIS** plugin that allows automatic calculation of the **Water 
   - `QgsRasterCalculator`
   - Algorithm `gdal:gridinversedistance`
 
-## Installation
-
-### Manual Installation
-
-1. Download the source code from the official repository.
-2. Copy the plugin folder to:
-   - On Windows: `C:\Users\<user>\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins`  
-   - On Linux/Mac: `~/.local/share/QGIS/QGIS3/profiles/default/python/plugins`
-3. Restart QGIS and enable the plugin from the plugin manager.
-
 ## Usage
 
 1. Create a QGIS Project
@@ -31,9 +21,11 @@ WQIPlugin is a **QGIS** plugin that allows automatic calculation of the **Water 
 ## Example of Use
 
 1. Choose your raster layers.
+   
 ![imagen](https://github.com/user-attachments/assets/058433ff-a401-4c8b-ae55-b84229ff08ad)
 
-2. Map the raster layers with physicochemical parameters. Use pre-established values or custom ones.
+3. Map the raster layers with physicochemical parameters. Use pre-established values or custom ones.
+   
 ![imagen](https://github.com/user-attachments/assets/137c294e-5b1b-4565-b7db-1f17a4d46e26)
 
 ## License
