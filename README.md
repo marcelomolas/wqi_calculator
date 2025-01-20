@@ -30,7 +30,11 @@ WQIPlugin is a **QGIS** plugin that allows automatic calculation of the **Water 
 
 ## Example of Use
 
-(Add screenshots or step-by-step workflow)
+1. Choose your raster layers.
+![imagen](https://github.com/user-attachments/assets/058433ff-a401-4c8b-ae55-b84229ff08ad)
+
+2. Map the raster layers with physicochemical parameters. Use pre-established values or custom ones.
+![imagen](https://github.com/user-attachments/assets/137c294e-5b1b-4565-b7db-1f17a4d46e26)
 
 ## License
 
