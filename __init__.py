@@ -32,5 +32,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .wqi_plugin import WQIPlugin
-    return WQIPlugin(iface)
+    from .wqi_calculator import WQICalculator
+    return WQICalculator(iface)

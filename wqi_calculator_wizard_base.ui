@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WQIPlugin</class>
- <widget class="QWizard" name="WQIPlugin">
+ <class>WQICalculator</class>
+ <widget class="QWizard" name="WQICalculator">
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>WQIPlugin</string>
+   <string>WQICalculator</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
