@@ -54,16 +54,15 @@ class WQICalculator:
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
-        QgsMessageLog.logMessage('WQICalculator_{}.qm'.format(locale), "tag", 0)
+
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
             'WQICalculator_{}.qm'.format(locale))
 
-        QgsMessageLog.logMessage(os.path.exists(locale_path).__str__(), "tag", 0)
-        QgsMessageLog.logMessage(locale_path.__str__(), "tag", 0)
+
         if os.path.exists(locale_path):
-            QgsMessageLog.logMessage("Existe!", "tag", 0)
+
             self.translator = QTranslator()
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
@@ -195,7 +194,7 @@ class WQICalculator:
         icon_path = ':/plugins/wqi_calculator/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'WQI Plugin'),
+            text=self.tr(u'WQI Calculator'),
             callback=self.run,
             parent=self.iface.mainWindow())
 
@@ -349,7 +348,6 @@ class WQICalculator:
         calculadora.processCalculation()
 
         self.iface.addRasterLayer(raster_file, "WQI")
-        QgsMessageLog.logMessage(formula, "tag", 0)
 
     def evaluar_seleccionar_capas_page(self):
         return self.dlg.SelectedCapas.count() > 1

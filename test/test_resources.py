@@ -18,7 +18,7 @@ from qgis.PyQt.QtGui import QIcon
 
 
 
-class WQIPluginDialogTest(unittest.TestCase):
+class WQICalculatorDialogTest(unittest.TestCase):
     """Test rerources work."""
 
     def setUp(self):
@@ -31,12 +31,12 @@ class WQIPluginDialogTest(unittest.TestCase):
 
     def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/WQIPlugin/icon.png'
+        path = ':/plugins/WQICalculator/icon.png'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(WQIPluginResourcesTest)
+    suite = unittest.makeSuite(WQICalculatorResourcesTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 

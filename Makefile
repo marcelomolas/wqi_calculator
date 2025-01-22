@@ -1,5 +1,5 @@
 #/***************************************************************************
-# WQIPlugin
+# WQICalculator
 #
 # Complemento para calcular de forma automática el WQI
 #							 -------------------
