@@ -2,6 +2,7 @@
 
 WQICalculator is a **QGIS** plugin that allows automatic calculation of the **Water Quality Index (WQI)** using raster data of various physicochemical parameters as input.
 
+
 ## Requirements
 
 - **QGIS**: Version 3.38.2 or higher
@@ -17,6 +18,8 @@ WQICalculator is a **QGIS** plugin that allows automatic calculation of the **Wa
 4. Access the plugin from the toolbar or `Plugins > WQICalculator`.
 5. Select the input layers and adjust the parameters as needed.
 6. Click "Generate WQI" to generate the water quality index raster layer.
+
+See our [User Guide](docs/USER_GUIDE_EN.md) for more information.
 
 ## Example of Use
 
