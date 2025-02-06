@@ -21,13 +21,14 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtWidgets import QTableWidget, QWizardPage
+from owslib.swe.common import Boolean
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegExp, QLibraryInfo, QLocale, QTimer
-from qgis._core import QgsMapLayer
+from qgis._core import QgsMapLayer, QgsRasterLayer, QgsColorRampShader, QgsRasterShader, \
+    QgsSingleBandPseudoColorRenderer
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
-from qgis.PyQt.QtGui import QIcon, QRegExpValidator
+from qgis.PyQt.QtGui import QIcon, QRegExpValidator, QColor
 from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView, QHeaderView, QStyledItemDelegate, \
-    QLineEdit, QWizard, QComboBox
+    QLineEdit, QWizard, QComboBox, QTableWidget, QWizardPage
 from qgis.analysis import QgsRasterCalculator, QgsRasterCalculatorEntry
 import processing
 # Initialize Qt resources from file resources.py
@@ -275,7 +276,8 @@ class WQICalculator:
 
         self.columnas_validadas = [True, True, True]
 
-        if item.column() == 4:
+
+        if type(item) is not bool and item.column() == 4:
             self.peso_total = 0
             for fila in range(0, tabla.rowCount()):
                 peso = tabla.item(fila, 4)
@@ -294,8 +296,8 @@ class WQICalculator:
                     tabla.setItem(fila, 5, item_peso_relativo)
 
         for columna in range(2, 5):
-            for fila in range(0, tabla.rowCount()):
-                item_tabla = tabla.item(fila, columna)
+            for fila in range(0, self.dlg.DatosAdicionales.rowCount()):
+                item_tabla = self.dlg.DatosAdicionales.item(fila, columna)
                 if item_tabla is None:
                     self.columnas_validadas[columna - 2] = False
                 else:
@@ -304,7 +306,10 @@ class WQICalculator:
                         self.columnas_validadas[columna - 2] = False
 
         self.dlg.DatosAdicionalesPage.completeChanged.emit()
+
         tabla.blockSignals(False)
+
+
 
     def calcular_wqi(self):
 
@@ -347,7 +352,35 @@ class WQICalculator:
                                           nOutputRows=layers_seleccionados[0].height())
         calculadora.processCalculation()
 
-        self.iface.addRasterLayer(raster_file, "WQI")
+        self.customize_wqi_raster_layer(raster_file)
+
+        #self.iface.addRasterLayer(raster_file, "WQI")
+
+    def customize_wqi_raster_layer(self, raster_file_path):
+
+
+        raster_layer = QgsRasterLayer(raster_file_path, baseName="WQI")
+        dp_raster_layer = raster_layer.dataProvider()
+
+        fnc = QgsColorRampShader()
+        fnc.setColorRampType(QgsColorRampShader.Discrete)
+
+        lst = [
+            QgsColorRampShader.ColorRampItem(50, QColor(145, 203, 168), "<= 50"),
+            QgsColorRampShader.ColorRampItem(100, QColor(221, 241, 180), "50 - 100"),
+            QgsColorRampShader.ColorRampItem(200, QColor(254, 223, 153), "100 - 200"),
+            QgsColorRampShader.ColorRampItem(300, QColor(245, 144, 83), "200 - 300"),
+            QgsColorRampShader.ColorRampItem(float('inf'), QColor(215, 25, 28), " > 300")
+        ]
+        fnc.setColorRampItemList(lst)
+
+        shader = QgsRasterShader()
+        shader.setRasterShaderFunction(fnc)
+
+        renderer = QgsSingleBandPseudoColorRenderer(dp_raster_layer, 1, shader)
+        raster_layer.setRenderer(renderer)
+
+        QgsProject.instance().addMapLayer(raster_layer)
 
     def evaluar_seleccionar_capas_page(self):
         return self.dlg.SelectedCapas.count() > 1
@@ -362,31 +395,6 @@ class WQICalculator:
     def se_selecciono_un_archivo(self):
         self.dlg.DatosAdicionalesPage.completeChanged.emit()
 
-    def generar_resumen(self):
-        if self.dlg.currentId() == 2:
-            self.dlg.resumenTextEdit.clear()
-            layers_seleccionados = []
-            peso_total = 0
-            for fila in range(0, self.dlg.DatosAdicionales.rowCount()):
-                peso_total += int(self.dlg.DatosAdicionales.item(fila, 4).text())
-                for layer in self.layers:
-                    if layer.name() == self.dlg.DatosAdicionales.item(fila, 0).text():
-                        layers_seleccionados.append(layer.layer())
-            formula = ""
-
-            for fila in range(0, len(layers_seleccionados)):
-                concentracion = layers_seleccionados[fila].name() + "@1"
-                estandar = self.dlg.DatosAdicionales.item(fila, 2).text()
-                valor_ideal = self.dlg.DatosAdicionales.item(fila, 3).text()
-                peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 4).text()) / peso_total
-
-                quality_rating = f"<span style='font-family: Latin Modern;font-weight: bold; font-size: 16px;'>(<span style='color: #cb4335;'>({concentracion}</span> - <span style='color: #1e8449 ;'>{valor_ideal}</span>) / (<span style='color: #2e86c1;'>{estandar}</span> - <span style='color: #1e8449 ;'>{valor_ideal}</span>)) * <span style='color: #d68910;'>{peso_relativo:.2f}</span> * 100</span>"
-
-                if fila == 0:
-                    formula += quality_rating
-                else:
-                    formula += " + " + quality_rating
-            self.dlg.resumenTextEdit.insertHtml(formula)
 
     def obtener_lista_de_capas(self):
         self.layers = QgsProject.instance().layerTreeRoot().findLayers()
@@ -479,7 +487,7 @@ class WQICalculator:
 
             self.dlg.setButtonText(QWizard.FinishButton, self.tr("Calcular WQI"))
             self.dlg.button(QWizard.FinishButton).clicked.connect(self.calcular_wqi)
-            # self.dlg.button(QWizard.NextButton).clicked.connect(self.generar_resumen)
+            self.dlg.button(QWizard.NextButton).clicked.connect(self.actualizar_peso_relativo)
 
             self.dlg.AllCapas.itemSelectionChanged.connect(self.se_selecciono_un_elemento_de_la_lista)
 
@@ -498,7 +506,7 @@ class WQICalculator:
         # Run the dialog event loop
         result = self.dlg.exec_()
 
-        # QgsMessageLog.logMessage("hola", "tag", 0)
+        #
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
