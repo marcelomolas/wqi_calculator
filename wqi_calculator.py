@@ -366,11 +366,11 @@ class WQICalculator:
         fnc.setColorRampType(QgsColorRampShader.Discrete)
 
         lst = [
-            QgsColorRampShader.ColorRampItem(50, QColor(145, 203, 168), "<= 50"),
-            QgsColorRampShader.ColorRampItem(100, QColor(221, 241, 180), "50 - 100"),
-            QgsColorRampShader.ColorRampItem(200, QColor(254, 223, 153), "100 - 200"),
-            QgsColorRampShader.ColorRampItem(300, QColor(245, 144, 83), "200 - 300"),
-            QgsColorRampShader.ColorRampItem(float('inf'), QColor(215, 25, 28), " > 300")
+            QgsColorRampShader.ColorRampItem(50, QColor(145, 203, 168), "<= 50 (Excellent Water)"),
+            QgsColorRampShader.ColorRampItem(100, QColor(221, 241, 180), "50 - 100 (Good Water)"),
+            QgsColorRampShader.ColorRampItem(200, QColor(254, 223, 153), "100 - 200 (Poor water)"),
+            QgsColorRampShader.ColorRampItem(300, QColor(245, 144, 83), "200 - 300 (Very Poor water)"),
+            QgsColorRampShader.ColorRampItem(float('inf'), QColor(215, 25, 28), " > 300 (Unsuitable for drinking purpose)")
         ]
         fnc.setColorRampItemList(lst)
 
@@ -407,15 +407,25 @@ class WQICalculator:
         QTimer.singleShot(100, self.obtener_lista_de_capas)  # 100 ms debería ser suficiente
 
     def abrir_plugin_interpolacion(self):
-        processing.execAlgorithmDialog('gdal:gridinversedistance', )
+
+        #processing.execAlgorithmDialog('qgis:idwinterpolation', {"PIXEL_SIZE": 90.0} )
+        processing.execAlgorithmDialog('gdal:gridinversedistance')
+
+
 
     def se_selecciono_un_elemento_de_la_lista(self):
+
+        self.layers = QgsProject.instance().layerTreeRoot().findLayers()
 
         solo_capas_raster_seleccionadas = True
         for capa in (self.dlg.AllCapas.selectedItems()):
             for layer in self.layers:
                 if layer.name() == capa.text() and layer.layer().type() == QgsMapLayer.VectorLayer:
                     solo_capas_raster_seleccionadas = False
+
+                    break
+                if not solo_capas_raster_seleccionadas:
+                    break
 
         if solo_capas_raster_seleccionadas:
             self.dlg.AddCapas.setEnabled(True)
@@ -456,7 +466,8 @@ class WQICalculator:
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
 
-        if self.first_start == True:
+        if self.first_start:
+
             self.first_start = False
             self.dlg = WQICalculatorWizard()
             self.dlg.AllCapas.clear()
@@ -470,7 +481,6 @@ class WQICalculator:
             self.dlg.InterpolarButton.setEnabled(False)
 
             self.dlg.errorTextLabel1.setStyleSheet("color: red;font-weight: bold")
-            self.dlg.errorTextLabel2.setStyleSheet("color: red;font-weight: bold")
 
             self.dlg.AddCapas.clicked.connect(self.seleccionar_capas)
             self.dlg.RemoveCapas.clicked.connect(self.remover_capas)

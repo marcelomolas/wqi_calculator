@@ -269,7 +269,7 @@
           <item>
            <widget class="QLabel" name="InformationTextLabel1">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -290,7 +290,7 @@
              </size>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;WQI Calculator&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Genera de forma automática el Índice de Calidad de Agua (WQI, por sus siglas en inglés) utilizando capas ráster como datos de entrada.&lt;/p&gt;&lt;p&gt;El WQI se calcula mediante una fórmula que combina varios parámetros físico-químicos del agua:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;WQI=∑&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:super;&quot;&gt;n&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i=1&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt; W&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;x&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt; q&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;/p&gt;&lt;p&gt;donde W&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el peso relativo del i-ésimo parámetro y q&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es su puntuación de calidad calculado de la siguiente manera:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;q&lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;= (|C&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;- I&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;| / |S&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;- I&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;|) x 100&lt;/span&gt;&lt;/p&gt;&lt;p&gt;donde C&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es la concentración correspondiente al i-ésimo parámetro, I&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el valor ideal en agua pura y S&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el estándar del i-ésimo parámetro en agua bebible.&lt;/p&gt;&lt;p&gt;Las capas ráster utilizadas como entrada representan a esos parámetros. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;WQI Calculator&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Genera de forma automática el Índice de Calidad de Agua (WQI, por sus siglas en inglés) utilizando capas ráster como datos de entrada.&lt;/p&gt;&lt;p&gt;Visite nuestra &lt;a href=&quot;https://github.com/marcelomolas/wqi_calculator/blob/main/docs/USER_GUIDE_EN.md&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Guía de usuario&lt;/span&gt;&lt;/a&gt; para más información.&lt;/p&gt;&lt;p&gt;El WQI se calcula mediante una fórmula que combina varios parámetros físico-químicos del agua:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;WQI=∑&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:super;&quot;&gt;n&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i=1&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt; W&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;x&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt; q&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;/p&gt;&lt;p&gt;donde W&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el peso relativo del i-ésimo parámetro y q&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es su puntuación de calidad calculado de la siguiente manera:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;q&lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;= (|C&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;- I&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;| / |S&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;- I&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;|) x 100&lt;/span&gt;&lt;/p&gt;&lt;p&gt;donde C&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es la concentración correspondiente al i-ésimo parámetro, I&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el valor ideal en agua pura y S&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;es el estándar del i-ésimo parámetro en agua bebible.&lt;/p&gt;&lt;p&gt;Las capas ráster utilizadas como entrada representan a esos parámetros. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="textFormat">
              <enum>Qt::RichText</enum>
@@ -445,7 +445,7 @@
         </property>
         <column>
          <property name="text">
-          <string>Capa (C)</string>
+          <string>Concentración (Ci)</string>
          </property>
         </column>
         <column>
@@ -455,12 +455,12 @@
         </column>
         <column>
          <property name="text">
-          <string>Estándar (S)</string>
+          <string>Estándar (Si)</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Valor Ideal (I)</string>
+          <string>Valor Ideal (Ii)</string>
          </property>
         </column>
         <column>
@@ -470,7 +470,7 @@
         </column>
         <column>
          <property name="text">
-          <string>Peso Relativo (W)</string>
+          <string>Peso Relativo (Wi)</string>
          </property>
         </column>
        </widget>
@@ -506,14 +506,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QgsFileWidget" name="DirectorioWQI">
-             <property name="storageMode">
-              <enum>QgsFileWidget::SaveFile</enum>
-             </property>
-             <property name="relativeStorage">
-              <enum>QgsFileWidget::Absolute</enum>
-             </property>
-            </widget>
+            <widget class="QgsFileWidget" name="DirectorioWQI" native="true"/>
            </item>
           </layout>
          </item>
@@ -564,8 +557,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>231</width>
-           <height>560</height>
+           <width>243</width>
+           <height>636</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -599,40 +592,6 @@
           </item>
          </layout>
         </widget>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="errorTextLabel2">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>62</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>240</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="textFormat">
-         <enum>Qt::RichText</enum>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <property name="margin">
-         <number>3</number>
-        </property>
        </widget>
       </item>
      </layout>
