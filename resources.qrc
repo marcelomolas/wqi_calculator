@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/wqi_plugin" >
+    <qresource prefix="/plugins/wqi_calculator" >
         <file>icon.png</file>
     </qresource>
 </RCC>

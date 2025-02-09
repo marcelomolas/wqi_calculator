@@ -6,7 +6,7 @@
 name=WQICalculator
 qgisMinimumVersion=3.0
 description=Complemento para calcular de forma automática el WQI
-version=0.1
+version=0.2
 author=Carin Martinez; Marcelo Molas
 email=marcemolas@fpuna.edu.py
 
@@ -20,7 +20,11 @@ repository=https://github.com/marcelomolas/wqi_calculator
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=0.2
+     - Bug Fixes
+        Added: Better legend names based on WQI classification. Better names for Additional Data Table. Link to the user guide on GitHub. Icon.
+    0.1:
+     - Release
 
 # Tags are comma separated with spaces allowed
 tags=python,WQI,water,analysis,quality
