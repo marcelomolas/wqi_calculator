@@ -25,6 +25,7 @@ from owslib.swe.common import Boolean
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QRegExp, QLibraryInfo, QLocale, QTimer
 from qgis._core import QgsMapLayer, QgsRasterLayer, QgsColorRampShader, QgsRasterShader, \
     QgsSingleBandPseudoColorRenderer
+from qgis._gui import QgsFileWidget
 from qgis.core import QgsProject, QgsMessageLog, QgsMapLayerType
 from qgis.PyQt.QtGui import QIcon, QRegExpValidator, QColor
 from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem, QAbstractItemView, QHeaderView, QStyledItemDelegate, \
@@ -265,10 +266,43 @@ class WQICalculator:
             self.dlg.SelectedCapas.takeItem(num_fila)
             self.dlg.DatosAdicionales.removeRow(num_fila)
 
+        self.reconstruct_additional_data_table()
+
         self.flag_mas_de_dos_rasters_seleccionados = self.dlg.SelectedCapas.count() > 1
         self.verificar_mensaje_de_error()
 
         self.dlg.SeleccionarCapasPage.completeChanged.emit()
+
+    def reconstruct_additional_data_table(self):
+        indice = 0
+        self.dlg.DatosAdicionales.setRowCount(0)
+        for i in range(0, self.dlg.SelectedCapas.count()):
+
+            capa = self.dlg.SelectedCapas.item(i)
+
+            self.dlg.DatosAdicionales.setRowCount(indice+1)
+            item_nombre_capa = QTableWidgetItem(capa.text())
+            item_nombre_capa.setFlags(item_nombre_capa.flags() ^ QtCore.Qt.ItemIsEditable)
+            # agregar la capa seleccionada a la tabla
+            self.dlg.DatosAdicionales.setItem(indice, 0, item_nombre_capa)
+            # agregar un combobox a la tabla
+            combo_box_parametros = QComboBox()
+            combo_box_parametros.addItems(
+                [self.tr("Personalizado"), self.tr("pH"), self.tr("Sólidos Totales Disueltos"), self.tr("Cloro"),
+                 self.tr("Sulfato"), self.tr("Sodio"), self.tr("Potasio"), self.tr("Calcio"), self.tr("Magnesio"),
+                 self.tr("Dureza"), self.tr("Nitratos")])
+            combo_box_parametros.currentIndexChanged.connect(
+                lambda state, row=indice: self.agregar_datos_preestablecidos_a_tabla(state, row))
+            self.dlg.DatosAdicionales.setCellWidget(indice, 1, combo_box_parametros)
+
+            """Hacer que la columna de peso relativo no sea modificable"""
+            item_peso_relativo = QTableWidgetItem()
+            item_peso_relativo.setFlags(
+                item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled))
+
+            self.dlg.DatosAdicionales.setItem(indice, 5, item_peso_relativo)
+
+            indice += 1
 
     def actualizar_peso_relativo(self, item: QTableWidgetItem):
         tabla: QTableWidget = self.dlg.DatosAdicionales
@@ -342,6 +376,7 @@ class WQICalculator:
                 formula += quality_rating
             else:
                 formula += "+ " + quality_rating
+
 
         directorio = self.dlg.DirectorioWQI.filePath()
         raster_file = directorio + ".tif"
@@ -498,6 +533,8 @@ class WQICalculator:
             self.dlg.setButtonText(QWizard.FinishButton, self.tr("Calcular WQI"))
             self.dlg.button(QWizard.FinishButton).clicked.connect(self.calcular_wqi)
             self.dlg.button(QWizard.NextButton).clicked.connect(self.actualizar_peso_relativo)
+
+            self.dlg.DirectorioWQI.setStorageMode(QgsFileWidget.SaveFile)
 
             self.dlg.AllCapas.itemSelectionChanged.connect(self.se_selecciono_un_elemento_de_la_lista)
 
