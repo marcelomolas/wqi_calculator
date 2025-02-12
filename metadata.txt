@@ -5,12 +5,12 @@
 [general]
 name=WQICalculator
 qgisMinimumVersion=3.0
-description=Complemento para calcular de forma automática el WQI
+description=A QGIS plugin that automatically generates the Water Quality Index (WQI) using raster data.
 version=0.2
 author=Carin Martinez; Marcelo Molas
 email=marcemolas@fpuna.edu.py
 
-about=Complemento para calcular de forma automática el WQI utilizando como entrada datos ráster de varios parámetros.
+about=A QGIS plugin that automatically generates the Water Quality Index (WQI) using raster data of multiple physicochemical parameters. Simplify your analysis and gain valuable insights into water quality of a given zone with just a few clicks.
 
 tracker=https://github.com/marcelomolas/wqi_calculator/issues
 repository=https://github.com/marcelomolas/wqi_calculator
