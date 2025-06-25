@@ -72,7 +72,7 @@ class WQICalculator:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&WQICalculator')
-
+        decimal_point = QLocale().decimalPoint()
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
@@ -83,7 +83,7 @@ class WQICalculator:
         self.flag_solo_rasters_seleccionados = False
 
         self.parametros_estandar = {
-            1: {"Estandar": 7.5, "Ideal": 5, "Peso": 4},  # "pH"
+            1: {"Estandar": ("7.5" if decimal_point == "." else "7,5"), "Ideal": 7, "Peso": 4},  # "pH"
             2: {"Estandar": 1000, "Ideal": 0, "Peso": 5},  # "Sólidos Totales Disueltos"
             3: {"Estandar": 250, "Ideal": 0, "Peso": 5},  # "Cloro"
             4: {"Estandar": 250, "Ideal": 0, "Peso": 5},  # "Sulfato"
@@ -235,13 +235,17 @@ class WQICalculator:
                 # agregar un combobox a la tabla
                 combo_box_parametros = QComboBox()
                 combo_box_parametros.addItems(
-                    [self.tr("Personalizado"), self.tr("pH"), self.tr("Sólidos Totales Disueltos"), self.tr("Cloro"),
+                    [self.tr("Personalizado"), self.tr("pH"), self.tr("Sólidos Totales Disueltos"), self.tr("Cloruro"),
                      self.tr("Sulfato"), self.tr("Sodio"), self.tr("Potasio"), self.tr("Calcio"), self.tr("Magnesio"),
                      self.tr("Dureza"), self.tr("Nitratos")])
                 combo_box_parametros.currentIndexChanged.connect(
                     lambda state, row=indice: self.agregar_datos_preestablecidos_a_tabla(state, row))
                 self.dlg.DatosAdicionales.setCellWidget(indice, 1, combo_box_parametros)
 
+                valor_ideal_widget_item = QTableWidgetItem()
+                valor_ideal_widget_item.setText("0")
+                self.dlg.DatosAdicionales.setItem(indice, 3,
+                                                  valor_ideal_widget_item)  # setear valor ideal a 0 para todos los parametros.
                 """Hacer que la columna de peso relativo no sea modificable"""
                 item_peso_relativo = QTableWidgetItem()
                 item_peso_relativo.setFlags(
@@ -288,12 +292,17 @@ class WQICalculator:
             # agregar un combobox a la tabla
             combo_box_parametros = QComboBox()
             combo_box_parametros.addItems(
-                [self.tr("Personalizado"), self.tr("pH"), self.tr("Sólidos Totales Disueltos"), self.tr("Cloro"),
+                [self.tr("Personalizado"), self.tr("pH"), self.tr("Sólidos Totales Disueltos"), self.tr("Cloruro"),
                  self.tr("Sulfato"), self.tr("Sodio"), self.tr("Potasio"), self.tr("Calcio"), self.tr("Magnesio"),
                  self.tr("Dureza"), self.tr("Nitratos")])
             combo_box_parametros.currentIndexChanged.connect(
                 lambda state, row=indice: self.agregar_datos_preestablecidos_a_tabla(state, row))
             self.dlg.DatosAdicionales.setCellWidget(indice, 1, combo_box_parametros)
+
+            valor_ideal_widget_item = QTableWidgetItem()
+            valor_ideal_widget_item.setText("0")
+            self.dlg.DatosAdicionales.setItem(indice, 3,
+                                                    valor_ideal_widget_item)  # setear valor ideal a 0 para todos los parametros.
 
             """Hacer que la columna de peso relativo no sea modificable"""
             item_peso_relativo = QTableWidgetItem()
@@ -316,15 +325,16 @@ class WQICalculator:
             for fila in range(0, tabla.rowCount()):
                 peso = tabla.item(fila, 4)
                 if peso is not None:
-                    self.peso_total += float(tabla.item(fila, 4).text())
+                    self.peso_total += parse_float_local(tabla.item(fila, 4).text())
 
-            self.dlg.peso_total_label.setText("{0:.0f}".format(self.peso_total))
+            self.dlg.peso_total_label.setText(format_float_local(self.peso_total))
 
             for fila in range(0, tabla.rowCount()):
                 peso = tabla.item(fila, 4)
                 if peso is not None:
-                    peso_relativo = float(peso.text()) / self.peso_total
-                    item_peso_relativo = QTableWidgetItem("{:.2f}".format(peso_relativo))
+
+                    peso_relativo = parse_float_local(peso.text()) / self.peso_total
+                    item_peso_relativo = QTableWidgetItem(format_float_local(peso_relativo))
                     item_peso_relativo.setFlags(
                         item_peso_relativo.flags() ^ (QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled))
                     tabla.setItem(fila, 5, item_peso_relativo)
@@ -350,7 +360,7 @@ class WQICalculator:
         layers_seleccionados = []
         peso_total = 0
         for fila in range(0, self.dlg.DatosAdicionales.rowCount()):
-            peso_total += int(self.dlg.DatosAdicionales.item(fila, 4).text())
+            peso_total += parse_float_local(self.dlg.DatosAdicionales.item(fila, 4).text())
             for layer in self.layers:
                 if layer.name() == self.dlg.DatosAdicionales.item(fila, 0).text():
                     layers_seleccionados.append(layer.layer())
@@ -366,9 +376,9 @@ class WQICalculator:
             entries.append(entry)
 
             concentracion = entry.ref
-            estandar = self.dlg.DatosAdicionales.item(fila, 2).text()
-            valor_ideal = self.dlg.DatosAdicionales.item(fila, 3).text()
-            peso_relativo = float(self.dlg.DatosAdicionales.item(fila, 4).text()) / peso_total
+            estandar = parse_float_local(self.dlg.DatosAdicionales.item(fila, 2).text()).__str__()
+            valor_ideal = parse_float_local(self.dlg.DatosAdicionales.item(fila, 3).text()).__str__()
+            peso_relativo = parse_float_local(self.dlg.DatosAdicionales.item(fila, 4).text()) / peso_total
 
             quality_rating = f"((({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100)"
 
@@ -377,7 +387,7 @@ class WQICalculator:
             else:
                 formula += "+ " + quality_rating
 
-
+        QgsMessageLog.logMessage(formula)
         directorio = self.dlg.DirectorioWQI.filePath()
         raster_file = directorio + ".tif"
 
@@ -401,11 +411,11 @@ class WQICalculator:
         fnc.setColorRampType(QgsColorRampShader.Discrete)
 
         lst = [
-            QgsColorRampShader.ColorRampItem(50, QColor(145, 203, 168), "<= 50 (Excellent Water)"),
-            QgsColorRampShader.ColorRampItem(100, QColor(221, 241, 180), "50 - 100 (Good Water)"),
-            QgsColorRampShader.ColorRampItem(200, QColor(254, 223, 153), "100 - 200 (Poor water)"),
-            QgsColorRampShader.ColorRampItem(300, QColor(245, 144, 83), "200 - 300 (Very Poor water)"),
-            QgsColorRampShader.ColorRampItem(float('inf'), QColor(215, 25, 28), " > 300 (Unsuitable for drinking purpose)")
+            QgsColorRampShader.ColorRampItem(50, QColor(145, 203, 168), self.tr("<= 50 (Excelente)")),
+            QgsColorRampShader.ColorRampItem(100, QColor(221, 241, 180), self.tr("50 - 100 (Buena)")),
+            QgsColorRampShader.ColorRampItem(200, QColor(254, 223, 153), self.tr("100 - 200 (Mala)")),
+            QgsColorRampShader.ColorRampItem(300, QColor(245, 144, 83), self.tr("200 - 300 (Muy mala)")),
+            QgsColorRampShader.ColorRampItem(float('inf'), QColor(215, 25, 28), self.tr(" > 300 (No apto para beber)"))
         ]
         fnc.setColorRampItemList(lst)
 
@@ -566,8 +576,23 @@ class NumericDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
         editor = super(NumericDelegate, self).createEditor(parent, option, index)
         if isinstance(editor, QLineEdit):
-            reg_ex = QRegExp("[0-9]+\.?[0-9]{,2}")
+            decimal_sep = QLocale().decimalPoint()
+            if decimal_sep == ',':
+                reg_ex = QRegExp(r"[0-9]+(,[0-9]{1,2})?")
+            else:
+                reg_ex = QRegExp(r"[0-9]+(\.[0-9]{1,2})?")
+            #reg_ex = QRegExp("[0-9]+\.?[0-9]{,2}")
 
             validator = QRegExpValidator(reg_ex, editor)
             editor.setValidator(validator)
         return editor
+
+def parse_float_local(texto, locale=None):
+    if locale is None:
+        locale = QLocale()
+    return locale.toDouble(texto)[0]
+
+def format_float_local(valor, decimales=2, locale=None):
+    if locale is None:
+        locale = QLocale()
+    return locale.toString(valor, 'f', decimales)
