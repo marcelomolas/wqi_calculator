@@ -6,7 +6,7 @@
 name=WQICalculator
 qgisMinimumVersion=3.0
 description=A QGIS plugin that automatically generates the Water Quality Index (WQI) using raster data.
-version=0.4
+version=0.5
 author=Carin Martinez; Marcelo Molas
 email=marcemolas@fpuna.edu.py
 
@@ -21,6 +21,12 @@ repository=https://github.com/marcelomolas/wqi_calculator
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
+    v0.5
+     - Corrected some translation issues.
+     - Ideal value is 0 by default.
+     - Decimal point is based on current system locale (user may enter "," as a decimal point if locale has "," as a decimal point).
+     - Change "Cloro" to "Cloruro".
+     - Ideal value of pH is now 7, was 5 by mistake.
     v0.4
      - Added some clarification for the Parameter column (selecting a parameter is optional)
      - Added some links to the paper we consulted for the WQI formula and to our usability survey.
