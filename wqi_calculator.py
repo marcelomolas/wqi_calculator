@@ -380,7 +380,7 @@ class WQICalculator:
             valor_ideal = parse_float_local(self.dlg.DatosAdicionales.item(fila, 3).text()).__str__()
             peso_relativo = parse_float_local(self.dlg.DatosAdicionales.item(fila, 4).text()) / peso_total
 
-            quality_rating = f"((({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100)"
+            quality_rating = f"((ABS({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100)"
 
             if fila == 0:
                 formula += quality_rating
