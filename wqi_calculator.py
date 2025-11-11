@@ -38,6 +38,10 @@ from .resources import *
 from .wqi_calculator_wizard import WQICalculatorWizard
 import os.path
 
+from .wqi_business_logic import WQICalculatorLogic
+from .wqi_data_manager import WQIDataManager
+
+
 
 class WQICalculator:
     """QGIS Plugin Implementation."""
@@ -100,6 +104,10 @@ class WQICalculator:
             3: "Ideal",
             4: "Peso",
         }
+
+        self.logic = WQICalculatorLogic()
+        self.data_manager = WQIDataManager()
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -356,76 +364,99 @@ class WQICalculator:
 
 
     def calcular_wqi(self):
+        """
+        Lee la configuración desde la UI (tabla y capas),
+        delega el cálculo a la capa de negocio
+        y la generación del ráster + simbología a la capa de datos.
+        """
 
         layers_seleccionados = []
-        peso_total = 0
+        parametros = []
+
+        # Igual idea que tu código original: iterar filas de DatosAdicionales
         for fila in range(0, self.dlg.DatosAdicionales.rowCount()):
-            peso_total += parse_float_local(self.dlg.DatosAdicionales.item(fila, 4).text())
+            item_nombre = self.dlg.DatosAdicionales.item(fila, 0)
+            item_estandar = self.dlg.DatosAdicionales.item(fila, 2)
+            item_ideal = self.dlg.DatosAdicionales.item(fila, 3)
+            item_peso = self.dlg.DatosAdicionales.item(fila, 4)
+
+            if not item_nombre or not item_estandar or not item_ideal or not item_peso:
+                continue
+
+            nombre_capa = item_nombre.text()
+            estandar = parse_float_local(item_estandar.text())
+            ideal = parse_float_local(item_ideal.text())
+            peso = parse_float_local(item_peso.text())
+
+            # Buscar la QgsRasterLayer correspondiente en self.layers
+            capa_raster = None
             for layer in self.layers:
-                if layer.name() == self.dlg.DatosAdicionales.item(fila, 0).text():
-                    layers_seleccionados.append(layer.layer())
+                if layer.name() == nombre_capa:
+                    capa_raster = layer.layer()
+                    break
 
-        entries = []
-        formula = ""
+            if capa_raster is None:
+                QgsMessageLog.logMessage(
+                    f"No se encontró la capa '{nombre_capa}' en el proyecto.",
+                    "WQICalculator"
+                )
+                continue
 
-        for fila in range(0, len(layers_seleccionados)):
-            entry = QgsRasterCalculatorEntry()
-            entry.bandNumber = 1
-            entry.raster = layers_seleccionados[fila]
-            entry.ref = layers_seleccionados[fila].name() + "@1"
-            entries.append(entry)
+            layers_seleccionados.append(capa_raster)
+            parametros.append({
+                "estandar": estandar,
+                "ideal": ideal,
+                "peso": peso
+            })
 
-            concentracion = entry.ref
-            estandar = parse_float_local(self.dlg.DatosAdicionales.item(fila, 2).text()).__str__()
-            valor_ideal = parse_float_local(self.dlg.DatosAdicionales.item(fila, 3).text()).__str__()
-            peso_relativo = parse_float_local(self.dlg.DatosAdicionales.item(fila, 4).text()) / peso_total
+        if not layers_seleccionados:
+            QgsMessageLog.logMessage(
+                "No hay capas válidas para calcular el WQI.",
+                "WQICalculator"
+            )
+            return
 
-            quality_rating = f"((ABS({concentracion} - {valor_ideal}) / ({estandar} - {valor_ideal})) * {peso_relativo} * 100)"
+        # 1) Capa de negocio: construye fórmula y entries
+        try:
+            formula, entries = self.logic.build_wqi_formula(layers_seleccionados, parametros)
+        except ValueError as e:
+            QgsMessageLog.logMessage(str(e), "WQICalculator")
+            return
 
-            if fila == 0:
-                formula += quality_rating
-            else:
-                formula += "+ " + quality_rating
+        QgsMessageLog.logMessage(formula, "WQICalculator")
 
-        QgsMessageLog.logMessage(formula)
+        # 2) Obtener ruta de salida desde la UI
         directorio = self.dlg.DirectorioWQI.filePath()
+        if not directorio:
+            QgsMessageLog.logMessage(
+                "No se seleccionó un archivo de salida para el WQI.",
+                "WQICalculator"
+            )
+            return
+
         raster_file = directorio + ".tif"
 
-        calculadora = QgsRasterCalculator(formulaString=formula, outputFile=raster_file, outputFormat="GTiff",
-                                          rasterEntries=entries, outputExtent=layers_seleccionados[0].extent(),
-                                          nOutputColumns=layers_seleccionados[0].width(),
-                                          nOutputRows=layers_seleccionados[0].height())
-        calculadora.processCalculation()
+        self.data_manager.create_wqi_raster(
+            formula=formula,
+            entries=entries,
+            output_path=raster_file,
+            reference_layer=layers_seleccionados[0]
+        )
 
-        self.customize_wqi_raster_layer(raster_file)
-
-        #self.iface.addRasterLayer(raster_file, "WQI")
+        classes = self.logic.get_wqi_classes()
+        self.data_manager.create_wqi_layer_with_symbology(
+            raster_file_path=raster_file,
+            classes=classes
+        )
 
     def customize_wqi_raster_layer(self, raster_file_path):
+        """
+        Mantenida como envoltorio para respetar la estructura original,
+        pero internamente delega en las capas de negocio y datos.
+        """
+        classes = self.logic.get_wqi_classes()
+        self.data_manager.create_wqi_layer_with_symbology(raster_file_path, classes)
 
-
-        raster_layer = QgsRasterLayer(raster_file_path, baseName="WQI")
-        dp_raster_layer = raster_layer.dataProvider()
-
-        fnc = QgsColorRampShader()
-        fnc.setColorRampType(QgsColorRampShader.Discrete)
-
-        lst = [
-            QgsColorRampShader.ColorRampItem(50, QColor(145, 203, 168), self.tr("<= 50 (Excelente)")),
-            QgsColorRampShader.ColorRampItem(100, QColor(221, 241, 180), self.tr("50 - 100 (Buena)")),
-            QgsColorRampShader.ColorRampItem(200, QColor(254, 223, 153), self.tr("100 - 200 (Mala)")),
-            QgsColorRampShader.ColorRampItem(300, QColor(245, 144, 83), self.tr("200 - 300 (Muy mala)")),
-            QgsColorRampShader.ColorRampItem(float('inf'), QColor(215, 25, 28), self.tr(" > 300 (No apto para beber)"))
-        ]
-        fnc.setColorRampItemList(lst)
-
-        shader = QgsRasterShader()
-        shader.setRasterShaderFunction(fnc)
-
-        renderer = QgsSingleBandPseudoColorRenderer(dp_raster_layer, 1, shader)
-        raster_layer.setRenderer(renderer)
-
-        QgsProject.instance().addMapLayer(raster_layer)
 
     def evaluar_seleccionar_capas_page(self):
         return self.dlg.SelectedCapas.count() > 1
@@ -442,7 +473,7 @@ class WQICalculator:
 
 
     def obtener_lista_de_capas(self):
-        self.layers = QgsProject.instance().layerTreeRoot().findLayers()
+        self.layers = self.data_manager.get_project_layers()
         self.dlg.AllCapas.clear()
         self.dlg.AllCapas.addItems(
             [layer.name() for layer in self.layers])
@@ -454,13 +485,13 @@ class WQICalculator:
     def abrir_plugin_interpolacion(self):
 
         #processing.execAlgorithmDialog('qgis:idwinterpolation', {"PIXEL_SIZE": 90.0} )
-        processing.execAlgorithmDialog('gdal:gridinversedistance')
+        self.data_manager.abrir_plugin_interpolacion()
 
 
 
     def se_selecciono_un_elemento_de_la_lista(self):
 
-        self.layers = QgsProject.instance().layerTreeRoot().findLayers()
+        self.layers = self.data_manager.get_project_layers()
 
         solo_capas_raster_seleccionadas = True
         for capa in (self.dlg.AllCapas.selectedItems()):
