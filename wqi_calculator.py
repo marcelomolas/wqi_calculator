@@ -373,7 +373,6 @@ class WQICalculator:
         layers_seleccionados = []
         parametros = []
 
-        # Igual idea que tu código original: iterar filas de DatosAdicionales
         for fila in range(0, self.dlg.DatosAdicionales.rowCount()):
             item_nombre = self.dlg.DatosAdicionales.item(fila, 0)
             item_estandar = self.dlg.DatosAdicionales.item(fila, 2)
@@ -416,7 +415,7 @@ class WQICalculator:
             )
             return
 
-        # 1) Capa de negocio: construye fórmula y entries
+
         try:
             formula, entries = self.logic.build_wqi_formula(layers_seleccionados, parametros)
         except ValueError as e:
@@ -425,7 +424,7 @@ class WQICalculator:
 
         QgsMessageLog.logMessage(formula, "WQICalculator")
 
-        # 2) Obtener ruta de salida desde la UI
+
         directorio = self.dlg.DirectorioWQI.filePath()
         if not directorio:
             QgsMessageLog.logMessage(

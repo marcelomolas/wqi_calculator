@@ -17,12 +17,6 @@ import os.path
 
 
 class WQIDataManager:
-    """
-    Capa de datos:
-    - Ejecuta el cálculo ráster.
-    - Guarda el archivo .tif.
-    - Crea la capa resultante con simbología y la agrega al proyecto.
-    """
 
     def abrir_plugin_interpolacion(self):
         processing.execAlgorithmDialog('gdal:gridinversedistance')
